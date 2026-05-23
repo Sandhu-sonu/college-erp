@@ -1,13 +1,19 @@
+import Navbar from "../components/website/Navbar";
+import Hero from "../components/website/Hero";
+import Courses from "../components/website/Courses";
+import About from "../components/website/About";
+import Stats from "../components/website/Stats";
+import Footer from "../components/website/Footer";
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100 p-10">
-      <h1 className="text-4xl font-bold text-blue-700">
-        College ERP System
-      </h1>
-
-      <p className="mt-4 text-gray-600">
-        Student CRM & Fee Management Portal
-      </p>
-    </main>
+    <>
+      <Navbar />
+      <Hero />
+      <Courses />
+      <About />
+      <Stats />
+      <Footer />
+    </>
   );
 }
