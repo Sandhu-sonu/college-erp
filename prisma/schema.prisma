@@ -29,3 +29,12 @@ model Fee {
   student Student @relation(fields: [studentId], references: [id])
 
 }
+model User {
+
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+}
