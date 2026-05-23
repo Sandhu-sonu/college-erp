@@ -1,6 +1,16 @@
 import Sidebar from "../../components/Sidebar";
+import { prisma } from "../../lib/prisma";
 
-export default function DashboardPage() {
+async function getStudentCount() {
+
+  const totalStudents = await prisma.student.count();
+
+  return totalStudents;
+}
+
+export default async function DashboardPage() {
+
+  const totalStudents = await getStudentCount();
 
   return (
     <main className="flex">
@@ -22,7 +32,7 @@ export default function DashboardPage() {
             </h2>
 
             <p className="text-4xl mt-4 font-bold text-blue-700">
-              120
+              {totalStudents}
             </p>
 
           </div>
@@ -34,7 +44,7 @@ export default function DashboardPage() {
             </h2>
 
             <p className="text-4xl mt-4 font-bold text-green-600">
-              ₹2.5L
+              ₹0
             </p>
 
           </div>
@@ -46,7 +56,7 @@ export default function DashboardPage() {
             </h2>
 
             <p className="text-4xl mt-4 font-bold text-red-600">
-              ₹80K
+              ₹0
             </p>
 
           </div>

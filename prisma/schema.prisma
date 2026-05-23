@@ -15,4 +15,17 @@ model Student {
   mobile      String
   feeStatus   String
   createdAt   DateTime @default(now())
+  fees Fee[]
+}
+model Fee {
+
+  id          Int      @id @default(autoincrement())
+
+  studentId   Int
+  amount      Float
+  status      String
+  paymentDate DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+
 }
