@@ -1,13 +1,29 @@
-import { prisma } from "../../../../lib/prisma";
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
 
-  const students = await prisma.student.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
 
-  return NextResponse.json(students);
+    const students = await prisma.student.findMany({
+
+      orderBy: {
+        createdAt: "desc",
+      },
+
+    });
+
+    return NextResponse.json(students);
+
+  } catch (error) {
+
+    console.log(error);
+
+    return NextResponse.json(
+      { error: "Failed to fetch students" },
+      { status: 500 }
+    );
+
+  }
+
 }

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function StudentsPage() {
+
+  const [courses, setCourses] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
 
@@ -29,11 +31,50 @@ export default function StudentsPage() {
     admissionDate: "",
 
     qualification: "",
-    rollNumber: "",
 
-    feeStatus: "",
+    totalFee: "",
+    paidAmount: "",
+    remainingFee: "",
 
   });
+
+  useEffect(() => {
+
+    fetchCourses();
+
+  }, []);
+
+  const fetchCourses = async () => {
+
+    const response = await fetch("/api/courses");
+
+    const data = await response.json();
+
+    setCourses(data);
+
+  };
+
+  useEffect(() => {
+
+    const selectedCourse = courses.find(
+      (course) => course.courseName === formData.course
+    );
+
+    if (selectedCourse) {
+
+      const total = selectedCourse.totalFee;
+
+      const paid = Number(formData.paidAmount || 0);
+
+      setFormData((prev) => ({
+        ...prev,
+        totalFee: total,
+        remainingFee: total - paid,
+      }));
+
+    }
+
+  }, [formData.course, formData.paidAmount, courses]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -93,9 +134,10 @@ export default function StudentsPage() {
         admissionDate: "",
 
         qualification: "",
-        rollNumber: "",
 
-        feeStatus: "",
+        totalFee: "",
+        paidAmount: "",
+        remainingFee: "",
 
       });
 
@@ -104,6 +146,7 @@ export default function StudentsPage() {
       alert("Failed to Save Student");
 
     }
+
   };
 
   return (
@@ -193,13 +236,55 @@ export default function StudentsPage() {
             className="border p-3 rounded"
           />
 
-          <input
-            type="text"
+          <select
             name="course"
-            placeholder="Course"
             value={formData.course}
             onChange={handleChange}
             className="border p-3 rounded"
+          >
+
+            <option value="">
+              Select Course
+            </option>
+
+            {courses.map((course) => (
+
+              <option
+                key={course.id}
+                value={course.courseName}
+              >
+                {course.courseName}
+              </option>
+
+            ))}
+
+          </select>
+
+          <input
+            type="number"
+            name="totalFee"
+            placeholder="Total Fee"
+            value={formData.totalFee}
+            readOnly
+            className="border p-3 rounded bg-gray-100"
+          />
+
+          <input
+            type="number"
+            name="paidAmount"
+            placeholder="Paid Amount"
+            value={formData.paidAmount}
+            onChange={handleChange}
+            className="border p-3 rounded"
+          />
+
+          <input
+            type="number"
+            name="remainingFee"
+            placeholder="Remaining Fee"
+            value={formData.remainingFee}
+            readOnly
+            className="border p-3 rounded bg-gray-100"
           />
 
           <input
@@ -230,15 +315,6 @@ export default function StudentsPage() {
 
           <input
             type="text"
-            name="rollNumber"
-            placeholder="Roll Number"
-            value={formData.rollNumber}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
-
-          <input
-            type="text"
             name="city"
             placeholder="City"
             value={formData.city}
@@ -260,15 +336,6 @@ export default function StudentsPage() {
             name="pinCode"
             placeholder="PIN Code"
             value={formData.pinCode}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
-
-          <input
-            type="text"
-            name="feeStatus"
-            placeholder="Fee Status"
-            value={formData.feeStatus}
             onChange={handleChange}
             className="border p-3 rounded"
           />
