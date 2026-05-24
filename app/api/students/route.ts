@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/prisma";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
 
@@ -8,48 +8,54 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const student = await prisma.student.create({
+
       data: {
+
         studentName: body.studentName,
         fatherName: body.fatherName,
-        course: body.course,
+        motherName: body.motherName,
+
+        gender: body.gender,
+        dob: body.dob,
+
         mobile: body.mobile,
+        alternatePhone: body.alternatePhone,
+
+        email: body.email,
+        address: body.address,
+
+        city: body.city,
+        state: body.state,
+        pinCode: body.pinCode,
+
+        course: body.course,
+
+        session: body.session,
+        admissionDate: body.admissionDate,
+
+        qualification: body.qualification,
+        rollNumber: body.rollNumber,
+
         feeStatus: body.feeStatus,
+
       },
-    });
 
-    return NextResponse.json(student);
-
-  } catch (error) {
-
-    console.log(error);
-
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
-  }
-}
-export async function DELETE(request: Request) {
-
-  try {
-
-    const { id } = await request.json();
-
-    await prisma.student.delete({
-      where: {
-        id: id,
-      },
     });
 
     return NextResponse.json({
-      message: "Student Deleted",
+      success: true,
+      student,
     });
 
   } catch (error) {
 
+    console.log("STUDENT ERROR FULL:", JSON.stringify(error, null, 2));
+
     return NextResponse.json(
-      { error: "Delete Failed" },
+      { error: "Failed to save student" },
       { status: 500 }
     );
+
   }
+
 }

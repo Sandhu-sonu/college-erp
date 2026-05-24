@@ -8,14 +8,39 @@ datasource db {
 }
 
 model Student {
-  id          Int      @id @default(autoincrement())
-  studentName String
-  fatherName  String
-  course      String
-  mobile      String
-  feeStatus   String
-  createdAt   DateTime @default(now())
-  fees Fee[]
+
+  id             Int      @id @default(autoincrement())
+
+  studentName    String
+  fatherName     String
+  motherName     String?
+
+  gender         String?
+  dob            String?
+
+  mobile         String
+  alternatePhone String?
+
+  email          String?
+  address        String?
+
+  city           String?
+  state          String?
+  pinCode        String?
+
+  course         String
+
+  session        String?
+  admissionDate  String?
+
+  qualification  String?
+  rollNumber     String?
+
+  feeStatus      String
+
+  createdAt      DateTime @default(now())
+
+  fees           Fee[]
 }
 model Fee {
 
@@ -37,4 +62,13 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
+}
+model Inquiry {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String
+  mobile    String
+  course    String
+  message   String
+  createdAt DateTime @default(now())
 }
