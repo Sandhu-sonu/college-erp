@@ -12,21 +12,39 @@ export async function GET(
 
   try {
 
-    const resolvedParams = await params;
+    const resolvedParams =
+      await params;
 
-    const student = await prisma.student.findUnique({
+    const student =
+      await prisma.student.findUnique({
 
-      where: {
-        id: Number(resolvedParams.id),
-      },
+        where: {
+          id: Number(
+            resolvedParams.id
+          ),
+        },
 
-    });
+        include: {
 
-    return NextResponse.json(student);
+          semesterRecords: {
+
+            orderBy: {
+              semester: "asc",
+            },
+
+          },
+
+        },
+
+      });
+
+    return NextResponse.json(
+      student
+    );
 
   } catch (error: any) {
 
-    console.log("GET ERROR:", error);
+    console.log(error);
 
     return NextResponse.json(
       {

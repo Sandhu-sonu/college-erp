@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Student" ADD COLUMN     "paidAmount" DOUBLE PRECISION,
-ADD COLUMN     "remainingFee" DOUBLE PRECISION,
-ADD COLUMN     "totalFee" DOUBLE PRECISION;

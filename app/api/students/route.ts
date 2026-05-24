@@ -1,90 +1,162 @@
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function POST(request: Request) {
+import { NextResponse } from "next/server";
+
+
+
+// GET ALL STUDENTS
+
+export async function GET() {
 
   try {
 
-    const body = await request.json();
+    const students =
+      await prisma.student.findMany({
 
-    // Auto fee calculations
-    const totalFee = Number(body.totalFee || 0);
+        include: {
 
-    const paidAmount = Number(body.paidAmount || 0);
+          semesterRecords: {
 
-    const remainingFee = totalFee - paidAmount;
+            orderBy: {
+              semester: "desc",
+            },
 
-    // Auto fee status
+            take: 1,
+
+          },
+
+        },
+
+        orderBy: {
+          createdAt: "desc",
+        },
+
+      });
+
+    return NextResponse.json(
+      students
+    );
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
+      { status: 500 }
+    );
+
+  }
+
+}
+
+
+// CREATE STUDENT
+
+export async function POST(
+  request: Request
+) {
+
+  try {
+
+    const body =
+      await request.json();
+
+    // AUTO CALCULATE REMAINING FEE
+
+    const remainingFee =
+
+      Number(body.totalFee) -
+
+      Number(body.paidAmount);
+
+    // AUTO DETERMINE STATUS
+
     const feeStatus =
-      remainingFee <= 0 ? "PAID" : "PENDING";
 
-    // Auto roll number generation
-    const lastStudent = await prisma.student.findFirst({
-      where: {
-        course: body.course,
-      },
-      orderBy: {
-        rollNumber: "desc",
-      },
-    });
+      remainingFee <= 0
+        ? "PAID"
+        : "PENDING";
 
-    const nextRollNumber = lastStudent?.rollNumber
-      ? lastStudent.rollNumber + 1
-      : 1;
 
-    // Create student
-    const student = await prisma.student.create({
+
+    // CREATE STUDENT
+
+    const student =
+      await prisma.student.create({
+
+        data: {
+
+          name:
+            body.studentName,
+
+          fatherName:
+            body.fatherName,
+
+          mobile:
+            body.mobile,
+
+          course:
+            body.course,
+
+          feeStatus,
+
+        },
+
+      });
+
+
+
+    // CREATE SEMESTER RECORD
+
+    await prisma.semesterRecord.create({
 
       data: {
 
-        studentName: body.studentName,
-        fatherName: body.fatherName,
-        motherName: body.motherName,
-        photo: body.photo,
+        studentId:
+          student.id,
 
-        gender: body.gender,
-        dob: body.dob,
+        semester:
+          Number(body.semester),
 
-        mobile: body.mobile,
-        alternatePhone: body.alternatePhone,
+        subjects:
+          body.subjects,
 
-        email: body.email,
-        address: body.address,
+        totalFee:
+          Number(body.totalFee),
 
-        city: body.city,
-        state: body.state,
-        pinCode: body.pinCode,
+        paidAmount:
+          Number(body.paidAmount),
 
-        course: body.course,
+        remainingFee,
 
-        session: body.session,
-        admissionDate: body.admissionDate,
-
-        qualification: body.qualification,
-
-        rollNumber: nextRollNumber,
-
-        feeStatus: feeStatus,
-
-        totalFee: totalFee,
-        paidAmount: paidAmount,
-        remainingFee: remainingFee,
+        feeStatus,
 
       },
 
     });
 
     return NextResponse.json({
+
       success: true,
+
       student,
+
     });
 
-  } catch (error) {
+  } catch (error: any) {
 
-    console.log("STUDENT ERROR:", error);
+    console.log(
+      "STUDENT CREATE ERROR:",
+      error
+    );
 
     return NextResponse.json(
-      { error: "Failed to save student" },
+      {
+        error: error.message,
+      },
       { status: 500 }
     );
 

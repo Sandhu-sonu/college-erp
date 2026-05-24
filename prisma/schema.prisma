@@ -9,95 +9,109 @@ datasource db {
 
 model Student {
 
-  id               Int       @id @default(autoincrement())
+  id                 Int @id @default(autoincrement())
 
-  studentName      String
-  fatherName       String
-  motherName       String?
+  name               String
 
-  gender           String?
-  dob              String?
+  fatherName         String
 
-  mobile           String
-  alternatePhone   String?
+  mobile             String
 
-  email            String?
-  address          String?
+  course             String
 
-  city             String?
-  state            String?
-  pinCode          String?
+  feeStatus          String
 
-  course           String
+  createdAt          DateTime @default(now())
 
-  session          String?
-  admissionDate    String?
+  fees               Fee[]
 
-  qualification    String?
-  photo            String?
-
-  rollNumber       Int?
-
-  feeStatus        String
-
-  totalFee         Float?
-  paidAmount       Float?
-  remainingFee     Float?
-
-  createdAt        DateTime  @default(now())
-
-  fees             Fee[]
+  semesterRecords    SemesterRecord[]
 
 }
-
 model Fee {
+  id Int @id @default(autoincrement())
 
-  id            Int       @id @default(autoincrement())
+  studentId Int
 
-  studentId     Int
-  amount        Float
-  status        String
+  amount Float
 
-  paymentDate   DateTime  @default(now())
+  status String
 
-  student       Student   @relation(fields: [studentId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+}
 
+model SemesterRecord {
+  id Int @id @default(autoincrement())
+
+  studentId Int
+
+  semester Int
+
+  subjects String
+
+  totalFee Float?
+
+  paidAmount Float?
+
+  remainingFee Float?
+
+  feeStatus String?
+
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Subject {
+  id Int @id @default(autoincrement())
+
+  subjectName String
+
+  courseName String
+
+  semester Int
+
+  subjectType String
+
+  createdAt DateTime @default(now())
 }
 
 model User {
+  id String @id @default(cuid())
 
-  id            String    @id @default(cuid())
+  name String?
 
-  name          String?
-  email         String    @unique
-  password      String
+  email String @unique
 
-  createdAt     DateTime  @default(now())
+  password String
 
+  createdAt DateTime @default(now())
 }
 
 model Inquiry {
+  id Int @id @default(autoincrement())
 
-  id            Int       @id @default(autoincrement())
+  fullName String
 
-  fullName      String
-  email         String
-  mobile        String
-  course        String
-  message       String
+  email String
 
-  createdAt     DateTime  @default(now())
+  mobile String
 
+  course String
+
+  message String
+
+  createdAt DateTime @default(now())
 }
 
 model Course {
+  id Int @id @default(autoincrement())
 
-  id            Int       @id @default(autoincrement())
+  courseName String @unique
 
-  courseName    String    @unique
-  totalFee      Float
-  duration      String?
+  totalFee Float
 
-  createdAt     DateTime  @default(now())
+  duration String?
 
+  createdAt DateTime @default(now())
 }

@@ -4,41 +4,35 @@ import { useEffect, useState } from "react";
 
 export default function StudentsPage() {
 
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] =
+    useState<any[]>([]);
 
-  const [formData, setFormData] = useState({
+  const [subjects, setSubjects] =
+    useState<any[]>([]);
 
-    studentName: "",
-    fatherName: "",
-    motherName: "",
+  const [selectedSubjects, setSelectedSubjects] =
+    useState<string[]>([]);
 
-    gender: "",
-    dob: "",
+  const [formData, setFormData] =
+    useState({
 
-    mobile: "",
-    alternatePhone: "",
+      studentName: "",
 
-    email: "",
-    address: "",
+      fatherName: "",
 
-    city: "",
-    state: "",
-    pinCode: "",
+      mobile: "",
 
-    course: "",
+      course: "",
 
-    session: "",
-    admissionDate: "",
+      semester: 1,
 
-    qualification: "",
+      totalFee: 0,
 
-    totalFee: "",
-    paidAmount: "",
-    remainingFee: "",
+      paidAmount: 0,
 
-    photo: "",
+      remainingFee: 0,
 
-  });
+    });
 
   useEffect(() => {
 
@@ -48,67 +42,25 @@ export default function StudentsPage() {
 
   const fetchCourses = async () => {
 
-    const response = await fetch("/api/courses");
+    const response =
+      await fetch("/api/courses");
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     setCourses(data);
 
   };
 
-  useEffect(() => {
-
-    const selectedCourse = courses.find(
-      (course) =>
-        course.courseName === formData.course
-    );
-
-    if (selectedCourse) {
-
-      const total = selectedCourse.totalFee;
-
-      const paid = Number(
-        formData.paidAmount || 0
-      );
-
-      setFormData((prev) => ({
-        ...prev,
-        totalFee: total,
-        remainingFee: total - paid,
-      }));
-
-    }
-
-  }, [
-    formData.course,
-    formData.paidAmount,
-    courses,
-  ]);
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement |
-      HTMLTextAreaElement |
-      HTMLSelectElement
-    >
-  ) => {
-
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-
-  };
-
   const handleSubmit = async (
-    e: React.FormEvent
+    e: any
   ) => {
 
     e.preventDefault();
 
-    const response = await fetch(
-      "/api/students",
-      {
+    const response =
+      await fetch("/api/students", {
+
         method: "POST",
 
         headers: {
@@ -116,55 +68,33 @@ export default function StudentsPage() {
             "application/json",
         },
 
-        body: JSON.stringify(formData),
-      }
-    );
+        body: JSON.stringify({
 
-    if (response.ok) {
+          ...formData,
 
-      alert(
-        "Student Saved Successfully"
-      );
+          subjects:
+            selectedSubjects.join(", "),
 
-      setFormData({
-
-        studentName: "",
-        fatherName: "",
-        motherName: "",
-
-        gender: "",
-        dob: "",
-
-        mobile: "",
-        alternatePhone: "",
-
-        email: "",
-        address: "",
-
-        city: "",
-        state: "",
-        pinCode: "",
-
-        course: "",
-
-        session: "",
-        admissionDate: "",
-
-        qualification: "",
-
-        totalFee: "",
-        paidAmount: "",
-        remainingFee: "",
-
-        photo: "",
+        }),
 
       });
 
-    } else {
+    const data =
+      await response.json();
+
+    if (data.success) {
 
       alert(
-        "Failed To Save Student"
+        "Student Registered Successfully"
       );
+
+      window.location.reload();
+
+    } else {
+
+      alert("Error");
+
+      console.log(data);
 
     }
 
@@ -172,255 +102,542 @@ export default function StudentsPage() {
 
   return (
 
-    <main className="min-h-screen bg-gray-100 p-10">
+    <main className="min-h-screen bg-gray-100 p-6">
 
-      <div className="max-w-6xl mx-auto bg-white p-10 rounded-2xl shadow">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
 
-        <h1 className="text-4xl font-bold mb-8 text-blue-700">
-          Student Registration
-        </h1>
+        {/* LEFT SECTION */}
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid md:grid-cols-2 gap-5"
-        >
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-8">
 
-          <input
-            type="text"
-            name="studentName"
-            placeholder="Student Name"
-            value={formData.studentName}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+          <h1 className="text-5xl font-bold text-gray-900">
 
-          <input
-            type="text"
-            name="fatherName"
-            placeholder="Father Name"
-            value={formData.fatherName}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+            Student Registration
 
-          <input
-            type="text"
-            name="motherName"
-            placeholder="Mother Name"
-            value={formData.motherName}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+          </h1>
 
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="border p-3 rounded"
+          <p className="text-gray-500 mt-3 mb-10 text-lg">
+
+            Register a new student and add semester details
+
+          </p>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-10"
           >
 
-            <option value="">
-              Select Gender
-            </option>
+            {/* STUDENT INFO */}
 
-            <option>
-              Male
-            </option>
+            <div>
 
-            <option>
-              Female
-            </option>
+              <h2 className="text-2xl font-bold text-blue-700 mb-6">
 
-          </select>
+                Student Information
 
-          <input
-            type="date"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+              </h2>
 
-          <input
-            type="text"
-            name="mobile"
-            placeholder="Mobile Number"
-            value={formData.mobile}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+              <div className="grid md:grid-cols-2 gap-6">
 
-          <input
-            type="text"
-            name="alternatePhone"
-            placeholder="Alternate Phone"
-            value={formData.alternatePhone}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                <input
+                  type="text"
+                  placeholder="Student Name"
+                  required
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                  onChange={(e) =>
+                    setFormData({
 
-          <select
-            name="course"
-            value={formData.course}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          >
+                      ...formData,
 
-            <option value="">
-              Select Course
-            </option>
+                      studentName:
+                        e.target.value,
 
-            {courses.map((course) => (
+                    })
+                  }
+                />
 
-              <option
-                key={course.id}
-                value={course.courseName}
-              >
-                {course.courseName}
-              </option>
+                <input
+                  type="text"
+                  placeholder="Father Name"
+                  required
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-            ))}
+                  onChange={(e) =>
+                    setFormData({
 
-          </select>
+                      ...formData,
 
-          <input
-            type="number"
-            name="totalFee"
-            placeholder="Total Fee"
-            value={formData.totalFee}
-            readOnly
-            className="border p-3 rounded bg-gray-100"
-          />
+                      fatherName:
+                        e.target.value,
 
-          <input
-            type="number"
-            name="paidAmount"
-            placeholder="Paid Amount"
-            value={formData.paidAmount}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                    })
+                  }
+                />
 
-          <input
-            type="number"
-            name="remainingFee"
-            placeholder="Remaining Fee"
-            value={formData.remainingFee}
-            readOnly
-            className="border p-3 rounded bg-gray-100"
-          />
+                <input
+                  type="text"
+                  placeholder="Mobile Number"
+                  required
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-          <input
-            type="text"
-            name="session"
-            placeholder="Session"
-            value={formData.session}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                  onChange={(e) =>
+                    setFormData({
 
-          <input
-            type="date"
-            name="admissionDate"
-            value={formData.admissionDate}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                      ...formData,
 
-          <input
-            type="text"
-            name="qualification"
-            placeholder="Qualification"
-            value={formData.qualification}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                      mobile:
+                        e.target.value,
 
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={formData.city}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                    })
+                  }
+                />
 
-          <input
-            type="text"
-            name="state"
-            placeholder="State"
-            value={formData.state}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                <select
+                  required
 
-          <input
-            type="text"
-            name="pinCode"
-            placeholder="PIN Code"
-            value={formData.pinCode}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-          <textarea
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-            className="border p-3 rounded md:col-span-2"
-            rows={4}
-          />
+                  onChange={async (e) => {
 
-          {/* PHOTO SECTION */}
+                    const selectedCourse =
+                      e.target.value;
 
-          <div className="md:col-span-2">
+                    const foundCourse =
+                      courses.find(
+                        (c) =>
+                          c.courseName ===
+                          selectedCourse
+                      );
 
-            <label className="block mb-2 font-semibold text-gray-700">
-              Student Photo (Optional)
-            </label>
+                    let fee = 0;
 
-            <input
-              type="text"
-              name="photo"
-              placeholder="Paste Student Photo URL (Optional)"
-              value={formData.photo}
-              onChange={handleChange}
-              className="w-full border p-3 rounded"
-            />
+                    if (foundCourse) {
 
-            <div className="mt-4 flex justify-center">
+                      fee =
+                        foundCourse.totalFee;
 
-              <img
-                src={
-                  formData.photo ||
-                  "https://via.placeholder.com/200x220.png?text=Student"
+                    }
+
+                    setFormData((prev) => ({
+
+                      ...prev,
+
+                      course:
+                        selectedCourse,
+
+                      totalFee:
+                        fee,
+
+                      remainingFee:
+                        fee -
+                        Number(
+                          prev.paidAmount
+                        ),
+
+                    }));
+
+                    const subjectResponse =
+                      await fetch(
+
+                        `/api/subjects?course=${selectedCourse}&semester=${formData.semester}`
+
+                      );
+
+                    const subjectData =
+                      await subjectResponse.json();
+
+                    setSubjects(
+                      subjectData
+                    );
+
+                  }}
+                >
+
+                  <option value="">
+                    Select Course
+                  </option>
+
+                  {courses.map((course) => (
+
+                    <option
+                      key={course.id}
+                      value={
+                        course.courseName
+                      }
+                    >
+
+                      {course.courseName}
+
+                    </option>
+
+                  ))}
+
+                </select>
+
+                <select
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+
+                  onChange={async (e) => {
+
+                    const semester =
+                      Number(
+                        e.target.value
+                      );
+
+                    setFormData({
+
+                      ...formData,
+
+                      semester,
+
+                    });
+
+                    if (formData.course) {
+
+                      const response =
+                        await fetch(
+
+                          `/api/subjects?course=${formData.course}&semester=${semester}`
+
+                        );
+
+                      const data =
+                        await response.json();
+
+                      setSubjects(data);
+
+                    }
+
+                  }}
+                >
+
+                  <option value="1">
+                    Semester 1
+                  </option>
+
+                  <option value="2">
+                    Semester 2
+                  </option>
+
+                  <option value="3">
+                    Semester 3
+                  </option>
+
+                  <option value="4">
+                    Semester 4
+                  </option>
+
+                  <option value="5">
+                    Semester 5
+                  </option>
+
+                  <option value="6">
+                    Semester 6
+                  </option>
+
+                </select>
+
+                <input
+                  type="number"
+                  value={formData.totalFee}
+                  readOnly
+
+                  placeholder="Total Fee"
+
+                  className="border-2 border-gray-200 p-4 rounded-2xl bg-gray-50"
+                />
+
+                <input
+                  type="number"
+
+                  placeholder="Paid Amount"
+
+                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+
+                  onChange={(e) => {
+
+                    const paid =
+                      Number(
+                        e.target.value
+                      );
+
+                    const total =
+                      Number(
+                        formData.totalFee
+                      );
+
+                    setFormData({
+
+                      ...formData,
+
+                      paidAmount:
+                        paid,
+
+                      remainingFee:
+                        total - paid,
+
+                    });
+
+                  }}
+                />
+
+                <input
+                  type="number"
+
+                  value={
+                    formData.remainingFee
+                  }
+
+                  readOnly
+
+                  placeholder="Remaining Fee"
+
+                  className="border-2 border-gray-200 p-4 rounded-2xl bg-gray-50"
+                />
+
+              </div>
+
+            </div>
+
+            {/* SUBJECTS */}
+
+            <div>
+
+              <div className="flex justify-between items-center mb-6">
+
+                <h2 className="text-2xl font-bold text-blue-700">
+
+                  Select Subjects
+
+                </h2>
+
+                <button
+                  type="button"
+
+                  className="bg-blue-600 text-white px-5 py-2 rounded-xl"
+                  onClick={() => {
+
+                    setSelectedSubjects(
+
+                      subjects.map(
+                        (s) =>
+                          s.subjectName
+                      )
+
+                    );
+
+                  }}
+                >
+
+                  Select All
+
+                </button>
+
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
+
+                {subjects.map((subject) => (
+
+                  <label
+                    key={subject.id}
+
+                    className="border-2 border-gray-200 rounded-2xl p-5 flex justify-between items-center cursor-pointer hover:border-blue-500 transition"
+                  >
+
+                    <div className="flex items-center gap-3">
+
+                      <input
+                        type="checkbox"
+
+                        checked={selectedSubjects.includes(
+                          subject.subjectName
+                        )}
+
+                        onChange={(e) => {
+
+                          if (
+                            e.target.checked
+                          ) {
+
+                            setSelectedSubjects([
+                              ...selectedSubjects,
+
+                              subject.subjectName,
+
+                            ]);
+
+                          } else {
+
+                            setSelectedSubjects(
+
+                              selectedSubjects.filter(
+                                (s) =>
+                                  s !==
+                                  subject.subjectName
+                              )
+
+                            );
+
+                          }
+
+                        }}
+                      />
+
+                      <div>
+
+                        <p className="font-semibold text-lg">
+
+                          {
+                            subject.subjectName
+                          }
+
+                        </p>
+
+                        <p className="text-sm text-gray-500">
+
+                          {
+                            subject.subjectType
+                          }
+
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  </label>
+
+                ))}
+
+              </div>
+
+            </div>
+
+            <button
+              type="submit"
+
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold p-5 rounded-2xl transition"
+            >
+
+              Register Student
+
+            </button>
+
+          </form>
+
+        </div>
+
+        {/* RIGHT SUMMARY */}
+
+        <div className="bg-white rounded-3xl shadow-lg p-8 h-fit sticky top-6">
+
+          <h2 className="text-2xl font-bold text-blue-700 mb-8">
+
+            Registration Summary
+
+          </h2>
+
+          <div className="space-y-6 text-lg">
+
+            <div className="flex justify-between">
+
+              <span className="text-gray-500">
+                Course
+              </span>
+
+              <span className="font-bold">
+                {formData.course || "-"}
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span className="text-gray-500">
+                Semester
+              </span>
+
+              <span className="font-bold">
+
+                Semester {
+                  formData.semester
                 }
-                alt="Student Preview"
-                className="w-40 h-44 object-cover rounded-2xl border-4 border-blue-600 shadow-lg"
-              />
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span className="text-gray-500">
+                Total Fee
+              </span>
+
+              <span className="font-bold text-green-600">
+
+                ₹ {
+                  formData.totalFee
+                }
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span className="text-gray-500">
+                Paid Amount
+              </span>
+
+              <span className="font-bold">
+
+                ₹ {
+                  formData.paidAmount
+                }
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span className="text-gray-500">
+                Remaining
+              </span>
+
+              <span className="font-bold text-red-600">
+
+                ₹ {
+                  formData.remainingFee
+                }
+
+              </span>
+
+            </div>
+
+            <div className="pt-5 border-t">
+
+              <p className="text-gray-500 mb-2">
+
+                Selected Subjects
+
+              </p>
+
+              <p className="font-bold text-blue-700 text-2xl">
+
+                {
+                  selectedSubjects.length
+                }
+
+              </p>
 
             </div>
 
           </div>
 
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-4 rounded hover:bg-blue-700 md:col-span-2"
-          >
-            Save Student
-          </button>
-
-        </form>
+        </div>
 
       </div>
 
