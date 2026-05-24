@@ -22,6 +22,7 @@ export default function EditStudentPage() {
     course: "",
     session: "",
     paidAmount: "",
+    photo: "",
   });
 
   useEffect(() => {
@@ -154,6 +155,14 @@ export default function EditStudentPage() {
             onChange={handleChange}
             className="border p-3 rounded"
           />
+          <input
+  type="text"
+  name="photo"
+  placeholder="Student Photo URL"
+  value={formData.photo || ""}
+  onChange={handleChange}
+  className="border p-3 rounded md:col-span-2"
+/>
 
           <button
             type="submit"

@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+
+
+// GET SINGLE STUDENT
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -10,19 +14,19 @@ export async function GET(
 
     const resolvedParams = await params;
 
-    const studentId = Number(resolvedParams.id);
-
     const student = await prisma.student.findUnique({
+
       where: {
-        id: studentId,
+        id: Number(resolvedParams.id),
       },
+
     });
 
     return NextResponse.json(student);
 
   } catch (error: any) {
 
-    console.log("REAL ERROR:", error);
+    console.log("GET ERROR:", error);
 
     return NextResponse.json(
       {
@@ -34,6 +38,11 @@ export async function GET(
   }
 
 }
+
+
+
+// UPDATE STUDENT
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -56,6 +65,7 @@ export async function PUT(
         studentName: body.studentName,
 
         fatherName: body.fatherName,
+        photo: body.photo,
 
         mobile: body.mobile,
 
@@ -74,6 +84,46 @@ export async function PUT(
   } catch (error: any) {
 
     console.log("UPDATE ERROR:", error);
+
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
+      { status: 500 }
+    );
+
+  }
+
+}
+
+
+
+// DELETE STUDENT
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+
+  try {
+
+    const resolvedParams = await params;
+
+    await prisma.student.delete({
+
+      where: {
+        id: Number(resolvedParams.id),
+      },
+
+    });
+
+    return NextResponse.json({
+      success: true,
+    });
+
+  } catch (error: any) {
+
+    console.log("DELETE ERROR:", error);
 
     return NextResponse.json(
       {

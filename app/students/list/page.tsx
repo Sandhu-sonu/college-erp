@@ -30,6 +30,35 @@ export default function StudentListPage() {
 
   };
 
+  const deleteStudent = async (id: number) => {
+
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this student?"
+    );
+
+    if (!confirmDelete) return;
+
+    const response = await fetch(
+      `/api/students/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+
+      alert("Student Deleted Successfully");
+
+      fetchStudents();
+
+    } else {
+
+      alert("Failed To Delete Student");
+
+    }
+
+  };
+
   const filteredStudents = students.filter((student) =>
 
     student.studentName
@@ -109,6 +138,8 @@ export default function StudentListPage() {
           />
 
         </div>
+
+        {/* Table */}
 
         <div className="overflow-x-auto">
 
@@ -217,7 +248,14 @@ export default function StudentListPage() {
 
                   </td>
 
-                  <td className="p-3">
+                  <td className="p-3 flex gap-2">
+
+                    <a
+                      href={`/students/view/${student.id}`}
+                      className="bg-green-600 text-white px-4 py-2 rounded"
+                    >
+                      View
+                    </a>
 
                     <a
                       href={`/students/edit/${student.id}`}
@@ -225,6 +263,15 @@ export default function StudentListPage() {
                     >
                       Edit
                     </a>
+
+                    <button
+                      onClick={() =>
+                        deleteStudent(student.id)
+                      }
+                      className="bg-red-600 text-white px-4 py-2 rounded"
+                    >
+                      Delete
+                    </button>
 
                   </td>
 

@@ -34,6 +34,7 @@ model Student {
   admissionDate    String?
 
   qualification    String?
+  photo            String?
 
   rollNumber       Int?
 

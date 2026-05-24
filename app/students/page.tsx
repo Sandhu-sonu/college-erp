@@ -36,6 +36,8 @@ export default function StudentsPage() {
     paidAmount: "",
     remainingFee: "",
 
+    photo: "",
+
   });
 
   useEffect(() => {
@@ -57,14 +59,17 @@ export default function StudentsPage() {
   useEffect(() => {
 
     const selectedCourse = courses.find(
-      (course) => course.courseName === formData.course
+      (course) =>
+        course.courseName === formData.course
     );
 
     if (selectedCourse) {
 
       const total = selectedCourse.totalFee;
 
-      const paid = Number(formData.paidAmount || 0);
+      const paid = Number(
+        formData.paidAmount || 0
+      );
 
       setFormData((prev) => ({
         ...prev,
@@ -74,7 +79,11 @@ export default function StudentsPage() {
 
     }
 
-  }, [formData.course, formData.paidAmount, courses]);
+  }, [
+    formData.course,
+    formData.paidAmount,
+    courses,
+  ]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -97,17 +106,25 @@ export default function StudentsPage() {
 
     e.preventDefault();
 
-    const response = await fetch("/api/students", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const response = await fetch(
+      "/api/students",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify(formData),
+      }
+    );
 
     if (response.ok) {
 
-      alert("Student Saved Successfully");
+      alert(
+        "Student Saved Successfully"
+      );
 
       setFormData({
 
@@ -139,17 +156,22 @@ export default function StudentsPage() {
         paidAmount: "",
         remainingFee: "",
 
+        photo: "",
+
       });
 
     } else {
 
-      alert("Failed to Save Student");
+      alert(
+        "Failed To Save Student"
+      );
 
     }
 
   };
 
   return (
+
     <main className="min-h-screen bg-gray-100 p-10">
 
       <div className="max-w-6xl mx-auto bg-white p-10 rounded-2xl shadow">
@@ -196,9 +218,19 @@ export default function StudentsPage() {
             onChange={handleChange}
             className="border p-3 rounded"
           >
-            <option value="">Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
+
+            <option value="">
+              Select Gender
+            </option>
+
+            <option>
+              Male
+            </option>
+
+            <option>
+              Female
+            </option>
+
           </select>
 
           <input
@@ -349,6 +381,38 @@ export default function StudentsPage() {
             rows={4}
           />
 
+          {/* PHOTO SECTION */}
+
+          <div className="md:col-span-2">
+
+            <label className="block mb-2 font-semibold text-gray-700">
+              Student Photo (Optional)
+            </label>
+
+            <input
+              type="text"
+              name="photo"
+              placeholder="Paste Student Photo URL (Optional)"
+              value={formData.photo}
+              onChange={handleChange}
+              className="w-full border p-3 rounded"
+            />
+
+            <div className="mt-4 flex justify-center">
+
+              <img
+                src={
+                  formData.photo ||
+                  "https://via.placeholder.com/200x220.png?text=Student"
+                }
+                alt="Student Preview"
+                className="w-40 h-44 object-cover rounded-2xl border-4 border-blue-600 shadow-lg"
+              />
+
+            </div>
+
+          </div>
+
           <button
             type="submit"
             className="bg-blue-600 text-white py-4 rounded hover:bg-blue-700 md:col-span-2"
@@ -361,5 +425,7 @@ export default function StudentsPage() {
       </div>
 
     </main>
+
   );
+
 }

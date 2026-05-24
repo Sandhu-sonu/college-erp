@@ -40,6 +40,7 @@ export async function POST(request: Request) {
         studentName: body.studentName,
         fatherName: body.fatherName,
         motherName: body.motherName,
+        photo: body.photo,
 
         gender: body.gender,
         dob: body.dob,
