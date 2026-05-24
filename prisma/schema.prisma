@@ -8,26 +8,25 @@ datasource db {
 }
 
 model Student {
+  id Int @id @default(autoincrement())
 
-  id                 Int @id @default(autoincrement())
+  name String
 
-  name               String
+  fatherName String
 
-  fatherName         String
+  mobile String
 
-  mobile             String
+  course String
 
-  course             String
+  feeStatus String
 
-  feeStatus          String
+  createdAt DateTime @default(now())
 
-  createdAt          DateTime @default(now())
+  fees Fee[]
 
-  fees               Fee[]
-
-  semesterRecords    SemesterRecord[]
-
+  semesterRecords SemesterRecord[]
 }
+
 model Fee {
   id Int @id @default(autoincrement())
 
@@ -35,7 +34,15 @@ model Fee {
 
   amount Float
 
-  status String
+  paymentDate DateTime @default(now())
+
+  paymentMethod String?
+
+  remarks String?
+
+  receiptNumber String?
+
+  createdAt DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id])
 }

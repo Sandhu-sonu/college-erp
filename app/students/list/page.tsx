@@ -9,11 +9,26 @@ export default function StudentsListPage() {
   const [students, setStudents] =
     useState<any[]>([]);
 
+
+
+  const [searchName, setSearchName] =
+    useState("");
+
+  const [searchMobile, setSearchMobile] =
+    useState("");
+
+  const [searchCourse, setSearchCourse] =
+    useState("");
+
+
+
   useEffect(() => {
 
     fetchStudents();
 
   }, []);
+
+
 
   const fetchStudents = async () => {
 
@@ -27,11 +42,48 @@ export default function StudentsListPage() {
 
   };
 
+
+
+  const filteredStudents =
+
+    students.filter((student) => {
+
+      return (
+
+        student.name
+          ?.toLowerCase()
+          .includes(
+            searchName.toLowerCase()
+          )
+
+        &&
+
+        student.mobile
+          ?.includes(
+            searchMobile
+          )
+
+        &&
+
+        student.course
+          ?.toLowerCase()
+          .includes(
+            searchCourse.toLowerCase()
+          )
+
+      );
+
+    });
+
+
+
   return (
 
     <main className="min-h-screen bg-gray-100 p-6">
 
       <div className="max-w-7xl mx-auto">
+
+        {/* HEADER */}
 
         <div className="flex justify-between items-center mb-8">
 
@@ -51,8 +103,11 @@ export default function StudentsListPage() {
 
           </div>
 
+
+
           <Link
             href="/students"
+
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl"
           >
 
@@ -61,6 +116,76 @@ export default function StudentsListPage() {
           </Link>
 
         </div>
+
+
+
+        {/* SEARCH FILTERS */}
+
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+
+          {/* MOBILE */}
+
+          <input
+            type="text"
+
+            placeholder="Search Mobile Number"
+
+            value={searchMobile}
+
+            onChange={(e) =>
+              setSearchMobile(
+                e.target.value
+              )
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600 bg-white"
+          />
+
+
+
+          {/* COURSE */}
+
+          <input
+            type="text"
+
+            placeholder="Search Course"
+
+            value={searchCourse}
+
+            onChange={(e) =>
+              setSearchCourse(
+                e.target.value
+              )
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600 bg-white"
+          />
+
+
+
+          {/* NAME */}
+
+          <input
+            type="text"
+
+            placeholder="Search Student Name"
+
+            value={searchName}
+
+            onChange={(e) =>
+              setSearchName(
+                e.target.value
+              )
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600 bg-white"
+          />
+
+        </div>
+
+
+
+        {/* TABLE */}
 
         <div className="overflow-x-auto bg-white rounded-3xl shadow-lg">
 
@@ -124,179 +249,222 @@ export default function StudentsListPage() {
 
             <tbody>
 
-              {students.map((student) => {
+              {filteredStudents.map(
+                (student) => {
 
-                const latest =
-                  student
-                    .semesterRecords[0];
+                  const latest =
+                    student
+                      .semesterRecords?.[0];
 
-                return (
+                  return (
 
-                  <tr
-                    key={student.id}
-                    className="border-b hover:bg-gray-50"
-                  >
+                    <tr
+                      key={student.id}
 
-                    <td className="p-5">
+                      className="border-b hover:bg-gray-50"
+                    >
 
-                      <div>
+                      {/* STUDENT */}
 
-                        <p className="font-bold text-lg">
+                      <td className="p-5">
 
-                          {student.name}
+                        <div>
 
-                        </p>
+                          <p className="font-bold text-lg">
 
-                        <p className="text-gray-500">
+                            {student.name}
 
-                          {
-                            student.mobile
-                          }
+                          </p>
 
-                        </p>
+                          <p className="text-gray-500">
 
-                      </div>
+                            {
+                              student.mobile
+                            }
 
-                    </td>
+                          </p>
 
-                    <td className="p-5 font-semibold">
+                        </div>
 
-                      {student.course}
+                      </td>
 
-                    </td>
 
-                    <td className="p-5">
 
-                      Semester {
-                        latest?.semester
-                      }
+                      {/* COURSE */}
 
-                    </td>
-
-                    <td className="p-5 text-green-700 font-bold">
-
-                      ₹ {
-                        latest?.totalFee
-                      }
-
-                    </td>
-
-                    <td className="p-5">
-
-                      ₹ {
-                        latest?.paidAmount
-                      }
-
-                    </td>
-
-                    <td className="p-5 text-red-600 font-bold">
-
-                      ₹ {
-                        latest?.remainingFee
-                      }
-
-                    </td>
-
-                    <td className="p-5">
-
-                      <span
-                        className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                          latest?.feeStatus ===
-                          "PAID"
-
-                            ? "bg-green-100 text-green-700"
-
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
+                      <td className="p-5 font-semibold">
 
                         {
-                          latest?.feeStatus
+                          student.course
                         }
 
-                      </span>
+                      </td>
 
-                    </td>
 
-                    <td className="p-5">
 
-  <div className="flex gap-2 justify-center flex-wrap">
+                      {/* SEMESTER */}
 
-    <Link
-      href={`/students/view/${student.id}`}
+                      <td className="p-5">
 
-      className="bg-blue-600 text-white px-4 py-2 rounded-xl"
-    >
+                        Semester {
+                          latest?.semester
+                        }
 
-      View
+                      </td>
 
-    </Link>
 
-    <Link
-      href={`/students/edit/${student.id}`}
 
-      className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
-    >
+                      {/* TOTAL FEE */}
 
-      Edit
+                      <td className="p-5 text-green-700 font-bold">
 
-    </Link>
+                        ₹ {
+                          latest?.totalFee
+                        }
 
-    <Link
-      href={`/students/fees/${student.id}`}
+                      </td>
 
-      className="bg-green-600 text-white px-4 py-2 rounded-xl"
-    >
 
-      Add Fee
 
-    </Link>
+                      {/* PAID */}
 
-    <button
+                      <td className="p-5">
 
-      className="bg-red-600 text-white px-4 py-2 rounded-xl"
+                        ₹ {
+                          latest?.paidAmount
+                        }
 
-      onClick={async () => {
+                      </td>
 
-        const confirmDelete =
-          confirm(
-            "Delete Student?"
-          );
 
-        if (
-          confirmDelete
-        ) {
 
-          await fetch(
+                      {/* REMAINING */}
 
-            `/api/students/${student.id}`,
+                      <td className="p-5 text-red-600 font-bold">
 
-            {
-              method: "DELETE",
-            }
+                        ₹ {
+                          latest?.remainingFee
+                        }
 
-          );
+                      </td>
 
-          fetchStudents();
 
-        }
 
-      }}
-    >
+                      {/* STATUS */}
 
-      Delete
+                      <td className="p-5">
 
-    </button>
+                        <span
 
-  </div>
+                          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            latest?.feeStatus ===
+                            "PAID"
 
-</td>
+                              ? "bg-green-100 text-green-700"
 
-                  </tr>
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
 
-                );
+                          {
+                            latest?.feeStatus
+                          }
 
-              })}
+                        </span>
+
+                      </td>
+
+
+
+                      {/* ACTIONS */}
+
+                      <td className="p-5">
+
+                        <div className="flex gap-2 justify-center flex-wrap">
+
+                          <Link
+                            href={`/students/view/${student.id}`}
+
+                            className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+                          >
+
+                            View
+
+                          </Link>
+
+
+
+                          <Link
+                            href={`/students/edit/${student.id}`}
+
+                            className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+                          >
+
+                            Edit
+
+                          </Link>
+
+
+
+                          <Link
+                            href={`/students/fees/${student.id}`}
+
+                            className="bg-green-600 text-white px-4 py-2 rounded-xl"
+                          >
+
+                            Add Fee
+
+                          </Link>
+
+
+
+                          <button
+
+                            className="bg-red-600 text-white px-4 py-2 rounded-xl"
+
+                            onClick={async () => {
+
+                              const confirmDelete =
+                                confirm(
+                                  "Delete Student?"
+                                );
+
+                              if (
+                                confirmDelete
+                              ) {
+
+                                await fetch(
+
+                                  `/api/students/${student.id}`,
+
+                                  {
+                                    method:
+                                      "DELETE",
+                                  }
+
+                                );
+
+                                fetchStudents();
+
+                              }
+
+                            }}
+                          >
+
+                            Delete
+
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  );
+
+                }
+              )}
 
             </tbody>
 

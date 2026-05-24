@@ -63,45 +63,54 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: any
 ) {
 
   try {
 
-    const resolvedParams = await params;
+    const id =
+      Number(
+        context.params.id
+      );
 
-    const body = await request.json();
+    const body =
+      await request.json();
 
-    const updatedStudent = await prisma.student.update({
+    const student =
+      await prisma.student.update({
 
-      where: {
-        id: Number(resolvedParams.id),
-      },
+        where: { id },
 
-      data: {
+        data: {
 
-        studentName: body.studentName,
+          name:
+            body.name,
 
-        fatherName: body.fatherName,
-        photo: body.photo,
+          fatherName:
+            body.fatherName,
 
-        mobile: body.mobile,
+          mobile:
+            body.mobile,
 
-        course: body.course,
+          course:
+            body.course,
 
-        session: body.session,
+          feeStatus:
+            body.feeStatus,
 
-        paidAmount: Number(body.paidAmount),
+        },
 
-      },
+      });
+
+    return NextResponse.json({
+
+      success: true,
+
+      student,
 
     });
 
-    return NextResponse.json(updatedStudent);
-
   } catch (error: any) {
-
-    console.log("UPDATE ERROR:", error);
 
     return NextResponse.json(
       {
@@ -113,7 +122,6 @@ export async function PUT(
   }
 
 }
-
 
 
 // DELETE STUDENT

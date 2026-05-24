@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  useParams,
-  useRouter,
-} from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export default function EditStudentPage() {
 
@@ -13,162 +10,301 @@ export default function EditStudentPage() {
 
   const router = useRouter();
 
-  const id = params.id;
+  const studentId =
+    params.id;
 
-  const [formData, setFormData] = useState<any>({
-    studentName: "",
-    fatherName: "",
-    mobile: "",
-    course: "",
-    session: "",
-    paidAmount: "",
-    photo: "",
-  });
+
+
+  const [student, setStudent] =
+    useState<any>(null);
+
+  const [courses, setCourses] =
+    useState<any[]>([]);
+
+
 
   useEffect(() => {
 
     fetchStudent();
 
+    fetchCourses();
+
   }, []);
+
+
 
   const fetchStudent = async () => {
 
-    const response = await fetch(
-      `/api/students/${id}`
-    );
+    const response =
+      await fetch(
 
-    const data = await response.json();
+        `/api/students/${studentId}`
 
-    setFormData(data);
+      );
 
-  };
+    const data =
+      await response.json();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setStudent(data);
 
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent
+
+
+  const fetchCourses = async () => {
+
+    const response =
+      await fetch("/api/courses");
+
+    const data =
+      await response.json();
+
+    setCourses(data);
+
+  };
+
+
+
+  const handleUpdate = async (
+    e: any
   ) => {
 
     e.preventDefault();
 
-    const response = await fetch(
-      `/api/students/${id}`,
-      {
-        method: "PUT",
+    const response =
+      await fetch(
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+        `/api/students/${studentId}`,
 
-        body: JSON.stringify(formData),
-      }
-    );
+        {
 
-    if (response.ok) {
+          method: "PUT",
 
-      alert("Student Updated Successfully");
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-      router.push("/students/list");
+          body: JSON.stringify(
+            student
+          ),
 
-    } else {
+        }
+      );
 
-      alert("Failed To Update Student");
+    const data =
+      await response.json();
+
+    if (data.success) {
+
+      alert(
+        "Student Updated Successfully"
+      );
+
+      router.push(
+        "/students/list"
+      );
 
     }
 
   };
 
+
+
+  if (!student) {
+
+    return (
+
+      <div className="p-10 text-center text-2xl">
+
+        Loading...
+
+      </div>
+
+    );
+
+  }
+
+
+
   return (
 
-    <main className="min-h-screen bg-gray-100 p-10">
+    <main className="min-h-screen bg-gray-100 p-6">
 
-      <div className="max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow">
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-lg p-8">
 
-        <h1 className="text-4xl font-bold mb-8 text-blue-700">
+        <h1 className="text-4xl font-bold mb-10">
+
           Edit Student
+
         </h1>
 
+
+
         <form
-          onSubmit={handleSubmit}
-          className="grid md:grid-cols-2 gap-5"
+          onSubmit={handleUpdate}
+          className="grid md:grid-cols-2 gap-6"
         >
 
-          <input
-            type="text"
-            name="studentName"
-            placeholder="Student Name"
-            value={formData.studentName || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
+          {/* NAME */}
 
           <input
             type="text"
-            name="fatherName"
-            placeholder="Father Name"
-            value={formData.fatherName || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
+
+            value={student.name}
+
+            className="border-2 border-gray-200 p-4 rounded-2xl"
+
+            onChange={(e) =>
+              setStudent({
+
+                ...student,
+
+                name:
+                  e.target.value,
+
+              })
+            }
           />
+
+
+
+          {/* FATHER NAME */}
 
           <input
             type="text"
-            name="mobile"
-            placeholder="Mobile Number"
-            value={formData.mobile || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
+
+            value={
+              student.fatherName
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl"
+
+            onChange={(e) =>
+              setStudent({
+
+                ...student,
+
+                fatherName:
+                  e.target.value,
+
+              })
+            }
           />
+
+
+
+          {/* MOBILE */}
 
           <input
             type="text"
-            name="course"
-            placeholder="Course"
-            value={formData.course || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
+
+            value={
+              student.mobile
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl"
+
+            onChange={(e) =>
+              setStudent({
+
+                ...student,
+
+                mobile:
+                  e.target.value,
+
+              })
+            }
           />
 
-          <input
-            type="text"
-            name="session"
-            placeholder="Session"
-            value={formData.session || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
 
-          <input
-            type="number"
-            name="paidAmount"
-            placeholder="Paid Amount"
-            value={formData.paidAmount || ""}
-            onChange={handleChange}
-            className="border p-3 rounded"
-          />
-          <input
-  type="text"
-  name="photo"
-  placeholder="Student Photo URL"
-  value={formData.photo || ""}
-  onChange={handleChange}
-  className="border p-3 rounded md:col-span-2"
-/>
+
+          {/* COURSE */}
+
+          <select
+
+            value={
+              student.course
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl"
+
+            onChange={(e) =>
+              setStudent({
+
+                ...student,
+
+                course:
+                  e.target.value,
+
+              })
+            }
+          >
+
+            {courses.map((course) => (
+
+              <option
+                key={course.id}
+
+                value={
+                  course.courseName
+                }
+              >
+
+                {
+                  course.courseName
+                }
+
+              </option>
+
+            ))}
+
+          </select>
+
+
+
+          {/* FEE STATUS */}
+
+          <select
+
+            value={
+              student.feeStatus
+            }
+
+            className="border-2 border-gray-200 p-4 rounded-2xl"
+
+            onChange={(e) =>
+              setStudent({
+
+                ...student,
+
+                feeStatus:
+                  e.target.value,
+
+              })
+            }
+          >
+
+            <option value="PAID">
+              PAID
+            </option>
+
+            <option value="PENDING">
+              PENDING
+            </option>
+
+          </select>
+
+
 
           <button
             type="submit"
-            className="bg-blue-600 text-white py-4 rounded hover:bg-blue-700 md:col-span-2"
+
+            className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl text-lg font-semibold md:col-span-2"
           >
+
             Update Student
+
           </button>
 
         </form>
