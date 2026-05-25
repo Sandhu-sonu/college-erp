@@ -1,97 +1,245 @@
 import Sidebar from "@/components/Sidebar";
-import prisma  from "@/lib/prisma";
+
+import Navbar from "@/components/Navbar";
+
+import prisma from "@/lib/prisma";
 
 async function getFees() {
 
   return await prisma.fee.findMany({
+
     include: {
+
       student: true,
+
     },
+
     orderBy: {
+
       paymentDate: "desc",
+
     },
+
   });
+
 }
+
+
 
 export default async function FeeHistoryPage() {
 
   const fees = await getFees();
 
+
+
   return (
-    <main className="flex">
+
+    <div className="flex bg-gray-100 min-h-screen">
 
       <Sidebar />
 
-      <section className="flex-1 p-10 bg-gray-100 min-h-screen">
 
-        <h1 className="text-4xl font-bold text-blue-700 mb-8">
-          Fee History
-        </h1>
 
-        <div className="bg-white p-6 rounded shadow">
+      <main className="flex-1 ml-72 p-6">
 
-          <table className="w-full border border-collapse">
+        <Navbar />
 
-            <thead>
 
-              <tr className="bg-blue-600 text-white">
 
-                <th className="border p-3">
-                  Student
-                </th>
+        <div className="bg-white rounded-3xl shadow-sm p-8">
 
-                <th className="border p-3">
-                  Amount
-                </th>
+          {/* HEADER */}
 
-                <th className="border p-3">
-                  Status
-                </th>
+          <div className="flex justify-between items-center mb-8">
 
-                <th className="border p-3">
-                  Payment Date
-                </th>
+            <div>
 
-              </tr>
+              <h1 className="text-4xl font-bold text-gray-900">
 
-            </thead>
+                Fee History
 
-            <tbody>
+              </h1>
 
-              {fees.map((fee) => (
 
-                <tr key={fee.id}>
 
-                  <td className="border p-3">
-                    {fee.student.studentName}
-                  </td>
+              <p className="text-gray-500 mt-2">
 
-                  <td className="border p-3">
-                    ₹ {fee.amount}
-                  </td>
+                Complete fee payment records
 
-                  <td className="border p-3">
-                    {fee.status}
-                  </td>
+              </p>
 
-                  <td className="border p-3">
-                    {new Date(
-                      fee.paymentDate
-                    ).toLocaleDateString()}
-                  </td>
+            </div>
+
+          </div>
+
+
+
+          {/* TABLE */}
+
+          <div className="overflow-x-auto rounded-3xl border border-gray-100">
+
+            <table className="w-full">
+
+              <thead className="bg-blue-600 text-white">
+
+                <tr>
+
+                  <th className="p-5 text-left">
+
+                    Student
+
+                  </th>
+
+
+
+                  <th className="p-5 text-left">
+
+                    Course
+
+                  </th>
+
+
+
+                  <th className="p-5 text-left">
+
+                    Amount
+
+                  </th>
+
+
+
+                  <th className="p-5 text-left">
+
+                    Receipt No.
+
+                  </th>
+
+
+
+                  <th className="p-5 text-left">
+
+                    Payment Method
+
+                  </th>
+
+
+
+                  <th className="p-5 text-left">
+
+                    Date
+
+                  </th>
 
                 </tr>
 
-              ))}
+              </thead>
 
-            </tbody>
 
-          </table>
+
+              <tbody>
+
+                {fees.map((fee) => (
+
+                  <tr
+                    key={fee.id}
+
+                    className="border-b hover:bg-gray-50 transition"
+                  >
+
+                    {/* STUDENT */}
+
+                    <td className="p-5">
+
+                      <div>
+
+                        <p className="font-bold text-gray-800">
+
+                          {fee.student.name}
+
+                        </p>
+
+
+
+                        <p className="text-gray-500 text-sm">
+
+                          {fee.student.mobile}
+
+                        </p>
+
+                      </div>
+
+                    </td>
+
+
+
+                    {/* COURSE */}
+
+                    <td className="p-5 font-medium text-gray-700">
+
+                      {fee.student.course}
+
+                    </td>
+
+
+
+                    {/* AMOUNT */}
+
+                    <td className="p-5 text-green-700 font-bold text-lg">
+
+                      ₹ {fee.amount}
+
+                    </td>
+
+
+
+                    {/* RECEIPT */}
+
+                    <td className="p-5">
+
+                      {fee.receiptNumber || "-"}
+
+                    </td>
+
+
+
+                    {/* METHOD */}
+
+                    <td className="p-5">
+
+                      {fee.paymentMethod || "Cash"}
+
+                    </td>
+
+
+
+                    {/* DATE */}
+
+                    <td className="p-5">
+
+                      {new Date(
+
+                        fee.paymentDate
+
+                      ).toLocaleDateString()}
+
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 
-      </section>
+      </main>
 
-    </main>
+    </div>
+
   );
+
 }
