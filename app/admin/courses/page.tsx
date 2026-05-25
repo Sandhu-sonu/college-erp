@@ -1,5 +1,4 @@
-import Navbar from "../../components/website/Navbar";
-import Footer from "../../components/website/Footer";
+
 
 export default function CoursesPage() {
   const courses = [
@@ -11,7 +10,6 @@ export default function CoursesPage() {
 
   return (
     <>
-      <Navbar />
 
       <section className="py-20 bg-gray-100 min-h-screen">
         <div className="max-w-7xl mx-auto px-4">
@@ -43,7 +41,6 @@ export default function CoursesPage() {
         </div>
       </section>
 
-      <Footer />
     </>
   );
 }

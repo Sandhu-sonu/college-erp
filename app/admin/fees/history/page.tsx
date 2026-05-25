@@ -1,5 +1,5 @@
-import Sidebar from "../../../components/Sidebar";
-import { prisma } from "../../../lib/prisma";
+import Sidebar from "@/components/Sidebar";
+import prisma  from "@/lib/prisma";
 
 async function getFees() {
 
