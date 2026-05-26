@@ -12,11 +12,14 @@ model Student {
 
   name String
 
+  
   fatherName String
 
   mobile String
 
-  course String
+  courseId Int?
+
+course Course? @relation(fields: [courseId], references: [id])
 
   feeStatus String
 
@@ -131,7 +134,7 @@ model Course {
 
   createdAt DateTime @default(now())
 
-
+students Student[]
 
   subjects Subject[]
 
