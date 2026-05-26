@@ -70,17 +70,23 @@ model SemesterRecord {
 }
 
 model Subject {
+
   id Int @id @default(autoincrement())
 
   subjectName String
-
-  courseName String
 
   semester Int
 
   subjectType String
 
   createdAt DateTime @default(now())
+
+
+
+  courseId Int
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
 }
 
 model User {
@@ -112,6 +118,7 @@ model Inquiry {
 }
 
 model Course {
+
   id Int @id @default(autoincrement())
 
   courseName String @unique
@@ -120,5 +127,12 @@ model Course {
 
   duration String?
 
+  semesters Int @default(6)
+
   createdAt DateTime @default(now())
+
+
+
+  subjects Subject[]
+
 }

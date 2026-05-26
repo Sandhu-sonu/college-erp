@@ -4,27 +4,85 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
 
-export default function FeesPage() {
+import Sidebar from "@/components/Sidebar";
 
-  const params = useParams();
+import Navbar from "@/components/Navbar";
+
+import jsPDF from "jspdf";
+
+
+
+interface Fee {
+
+  id: number;
+
+  amount: number;
+
+  paymentDate: string;
+
+  paymentMethod?: string;
+
+}
+
+
+
+interface Student {
+
+  id: number;
+
+  name: string;
+
+  mobile: string;
+
+  course: string;
+
+  feeStatus: string;
+
+  semesterRecords: {
+
+    semester: number;
+
+    totalFee: number;
+
+    paidAmount: number;
+
+    remainingFee: number;
+
+  }[];
+
+}
+
+
+
+export default function StudentFeePage() {
+
+  const params =
+    useParams();
+
+
 
   const studentId =
     params.id;
 
+
+
   const [student, setStudent] =
-    useState<any>(null);
+    useState<Student | null>(null);
+
+
 
   const [fees, setFees] =
-    useState<any[]>([]);
+    useState<Fee[]>([]);
 
-  const [amount, setAmount] =
+
+
+  const [paymentAmount, setPaymentAmount] =
     useState("");
 
-  const [paymentMethod, setPaymentMethod] =
-    useState("Cash");
 
-  const [remarks, setRemarks] =
-    useState("");
+
+  const [showReceiptButton, setShowReceiptButton] =
+    useState(false);
 
 
 
@@ -47,8 +105,12 @@ export default function FeesPage() {
 
       );
 
+
+
     const data =
       await response.json();
+
+
 
     setStudent(data);
 
@@ -56,29 +118,66 @@ export default function FeesPage() {
 
 
 
-  const fetchFees = async () => {
+ 
+const fetchFees = async () => {
+
+  try {
 
     const response =
       await fetch(
-
-        `/api/fees?studentId=${studentId}`
-
+        `/api/fees/${studentId}`
       );
+
+
 
     const data =
       await response.json();
 
-    setFees(data);
-
-  };
 
 
+    if (Array.isArray(data)) {
 
-  const handleSubmit = async (
-    e: any
-  ) => {
+      setFees(data);
 
-    e.preventDefault();
+    } else {
+
+      console.log(
+        "Invalid fees data:",
+        data
+      );
+
+      setFees([]);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    setFees([]);
+
+  }
+
+};
+
+  const latestSemester =
+    student?.semesterRecords?.[0];
+
+
+
+  const handlePayment = async () => {
+
+    if (!paymentAmount) {
+
+      alert(
+        "Enter payment amount"
+      );
+
+      return;
+
+    }
+
+
 
     const response =
       await fetch("/api/fees", {
@@ -86,36 +185,40 @@ export default function FeesPage() {
         method: "POST",
 
         headers: {
+
           "Content-Type":
             "application/json",
+
         },
 
         body: JSON.stringify({
 
           studentId,
 
-          amount,
-
-          paymentMethod,
-
-          remarks,
+          amount:
+            Number(paymentAmount),
 
         }),
 
       });
 
-    const data =
-      await response.json();
 
-    if (data.success) {
+
+    if (response.ok) {
 
       alert(
-        "Fee Added Successfully"
+        "Payment Added Successfully"
       );
 
-      setAmount("");
 
-      setRemarks("");
+
+      setShowReceiptButton(true);
+
+
+
+      setPaymentAmount("");
+
+
 
       fetchStudent();
 
@@ -127,60 +230,457 @@ export default function FeesPage() {
 
 
 
-  const latest =
-    student?.semesterRecords?.[0];
+  const generateReceipt = () => {
+
+    if (!student) return;
+
+
+
+    const doc =
+      new jsPDF();
+
+
+
+    // HEADER
+
+    doc.setFillColor(
+      37,
+      99,
+      235
+    );
+
+
+
+    doc.rect(
+      0,
+      0,
+      210,
+      35,
+      "F"
+    );
+
+
+
+    doc.setTextColor(
+      255,
+      255,
+      255
+    );
+
+
+
+    doc.setFontSize(24);
+
+    doc.text(
+      "COLLEGE ERP",
+      20,
+      20
+    );
+
+
+
+    doc.setFontSize(11);
+
+    doc.text(
+      "Official Fee Receipt",
+      20,
+      28
+    );
+
+
+
+    // RESET COLOR
+
+    doc.setTextColor(
+      0,
+      0,
+      0
+    );
+
+
+
+    // RECEIPT INFO
+
+    doc.setFontSize(12);
+
+
+
+    doc.text(
+      `Receipt No: RCPT-${Date.now()}`,
+      140,
+      50
+    );
+
+
+
+    doc.text(
+      `Date: ${new Date().toLocaleDateString()}`,
+      140,
+      58
+    );
+
+
+
+    // STUDENT BOX
+
+    doc.setDrawColor(220);
+
+
+
+    doc.roundedRect(
+      15,
+      45,
+      180,
+      45,
+      3,
+      3
+    );
+
+
+
+    doc.setFontSize(16);
+
+    doc.text(
+      "Student Details",
+      20,
+      58
+    );
+
+
+
+    doc.setFontSize(12);
+
+
+
+    doc.text(
+      `Name: ${student.name}`,
+      20,
+      70
+    );
+
+
+
+    doc.text(
+      `Course: ${student.course}`,
+      20,
+      78
+    );
+
+
+
+    doc.text(
+      `Mobile: ${student.mobile}`,
+      110,
+      70
+    );
+
+
+
+    doc.text(
+      `Semester: ${
+        latestSemester?.semester || "-"
+      }`,
+      110,
+      78
+    );
+
+
+
+    // PAYMENT TABLE HEADER
+
+    doc.setFillColor(
+      37,
+      99,
+      235
+    );
+
+
+
+    doc.rect(
+      15,
+      105,
+      180,
+      12,
+      "F"
+    );
+
+
+
+    doc.setTextColor(
+      255,
+      255,
+      255
+    );
+
+
+
+    doc.setFontSize(13);
+
+    doc.text(
+      "Fee Details",
+      20,
+      113
+    );
+
+
+
+    doc.setTextColor(
+      0,
+      0,
+      0
+    );
+
+
+
+    // TABLE
+
+    doc.rect(
+      15,
+      117,
+      180,
+      50
+    );
+
+
+
+    doc.line(
+      120,
+      117,
+      120,
+      167
+    );
+
+
+
+    doc.line(
+      15,
+      130,
+      195,
+      130
+    );
+
+
+
+    doc.line(
+      15,
+      143,
+      195,
+      143
+    );
+
+
+
+    doc.line(
+      15,
+      156,
+      195,
+      156
+    );
+
+
+
+    doc.setFontSize(12);
+
+
+
+    doc.text(
+      "Description",
+      20,
+      126
+    );
+
+
+
+    doc.text(
+      "Amount",
+      145,
+      126
+    );
+
+
+
+    doc.text(
+      "Total Fee",
+      20,
+      139
+    );
+
+
+
+    doc.text(
+      `₹ ${
+        latestSemester?.totalFee || 0
+      }`,
+      145,
+      139
+    );
+
+
+
+    doc.text(
+      "Paid Amount",
+      20,
+      152
+    );
+
+
+
+    doc.text(
+      `₹ ${
+        latestSemester?.paidAmount || 0
+      }`,
+      145,
+      152
+    );
+
+
+
+    doc.text(
+      "Remaining Fee",
+      20,
+      165
+    );
+
+
+
+    doc.text(
+      `₹ ${
+        latestSemester?.remainingFee || 0
+      }`,
+      145,
+      165
+    );
+
+
+
+    // FOOTER
+
+    doc.setFontSize(11);
+
+
+
+    doc.text(
+      "Authorized Signature",
+      145,
+      210
+    );
+
+
+
+    doc.line(
+      130,
+      205,
+      190,
+      205
+    );
+
+
+
+    doc.setTextColor(100);
+
+
+
+    doc.text(
+      "This is a system generated receipt.",
+      20,
+      250
+    );
+
+
+
+    // PREVIEW PDF
+
+    const pdfBlobUrl =
+      doc.output("bloburl");
+
+
+
+    window.open(
+      pdfBlobUrl,
+      "_blank"
+    );
+
+  };
 
 
 
   return (
 
-    <main className="min-h-screen bg-gray-100 p-6">
+    <div className="flex bg-gray-100 min-h-screen">
 
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
-
-        {/* LEFT */}
-
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-8">
-
-          <h1 className="text-4xl font-bold mb-8">
-
-            Fee Collection
-
-          </h1>
+      <Sidebar />
 
 
 
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
+      <main className="flex-1 ml-72 p-6">
 
-            <div className="bg-blue-50 p-6 rounded-2xl">
+        <Navbar />
 
-              <p className="text-gray-500">
+
+
+        <div className="space-y-8">
+
+          {/* HEADER */}
+
+          <div>
+
+            <h1 className="text-4xl font-bold text-gray-900">
+
+              Student Fee Management
+
+            </h1>
+
+
+
+            <p className="text-gray-500 mt-2">
+
+              Collect fees and manage payment history
+
+            </p>
+
+          </div>
+
+
+
+          {/* STUDENT INFO */}
+
+          <div className="grid md:grid-cols-4 gap-6">
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
+
+                Student
+
+              </p>
+
+
+
+              <h2 className="text-2xl font-bold text-gray-800">
+
+                {student?.name}
+
+              </h2>
+
+            </div>
+
+
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
 
                 Total Fee
 
               </p>
 
-              <h2 className="text-3xl font-bold text-blue-700 mt-2">
-
-                ₹ {latest?.totalFee}
-
-              </h2>
-
-            </div>
 
 
+              <h2 className="text-3xl font-bold text-blue-600">
 
-            <div className="bg-green-50 p-6 rounded-2xl">
-
-              <p className="text-gray-500">
-
-                Paid
-
-              </p>
-
-              <h2 className="text-3xl font-bold text-green-700 mt-2">
-
-                ₹ {latest?.paidAmount}
+                ₹ {
+                  latestSemester?.totalFee || 0
+                }
 
               </h2>
 
@@ -188,17 +688,43 @@ export default function FeesPage() {
 
 
 
-            <div className="bg-red-50 p-6 rounded-2xl">
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
 
-              <p className="text-gray-500">
+              <p className="text-gray-500 mb-2">
 
-                Remaining
+                Paid Amount
 
               </p>
 
-              <h2 className="text-3xl font-bold text-red-700 mt-2">
 
-                ₹ {latest?.remainingFee}
+
+              <h2 className="text-3xl font-bold text-green-600">
+
+                ₹ {
+                  latestSemester?.paidAmount || 0
+                }
+
+              </h2>
+
+            </div>
+
+
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
+
+                Remaining Fee
+
+              </p>
+
+
+
+              <h2 className="text-3xl font-bold text-red-600">
+
+                ₹ {
+                  latestSemester?.remainingFee || 0
+                }
 
               </h2>
 
@@ -208,168 +734,175 @@ export default function FeesPage() {
 
 
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
+          {/* PAYMENT FORM */}
 
-            <input
-              type="number"
+          <div className="bg-white rounded-3xl shadow-sm p-8 max-w-2xl">
 
-              required
+            <h2 className="text-2xl font-bold mb-6">
 
-              value={amount}
+              Add Fee Payment
 
-              placeholder="Enter Amount"
-
-              className="w-full border-2 border-gray-200 p-4 rounded-2xl"
-
-              onChange={(e) =>
-                setAmount(
-                  e.target.value
-                )
-              }
-            />
+            </h2>
 
 
 
-            <select
-              className="w-full border-2 border-gray-200 p-4 rounded-2xl"
+            <div className="space-y-5">
 
-              value={
-                paymentMethod
-              }
+              <input
+                type="number"
 
-              onChange={(e) =>
-                setPaymentMethod(
-                  e.target.value
-                )
-              }
-            >
+                placeholder="Enter Payment Amount"
 
-              <option>
-                Cash
-              </option>
+                value={paymentAmount}
 
-              <option>
-                UPI
-              </option>
+                onChange={(e) =>
+                  setPaymentAmount(
+                    e.target.value
+                  )
+                }
 
-              <option>
-                Bank Transfer
-              </option>
-
-              <option>
-                Card
-              </option>
-
-            </select>
+                className="w-full border border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+              />
 
 
 
-            <textarea
-              rows={4}
+              <div className="flex gap-4">
 
-              value={remarks}
+                <button
 
-              placeholder="Remarks"
+                  onClick={handlePayment}
 
-              className="w-full border-2 border-gray-200 p-4 rounded-2xl"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-semibold"
+                >
 
-              onChange={(e) =>
-                setRemarks(
-                  e.target.value
-                )
-              }
-            />
+                  Save Payment
+
+                </button>
 
 
 
-            <button
-              type="submit"
+                {showReceiptButton && (
 
-              className="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl text-xl font-semibold"
-            >
+                  <button
 
-              Add Fee
+                    onClick={generateReceipt}
 
-            </button>
+                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-semibold"
+                  >
 
-          </form>
+                    View Receipt
 
-        </div>
+                  </button>
 
-
-
-        {/* RIGHT */}
-
-        <div className="bg-white rounded-3xl shadow-lg p-8">
-
-          <h2 className="text-2xl font-bold mb-8">
-
-            Fee History
-
-          </h2>
-
-
-
-          <div className="space-y-5">
-
-            {fees.map((fee) => (
-
-              <div
-                key={fee.id}
-
-                className="border rounded-2xl p-5"
-              >
-
-                <div className="flex justify-between mb-2">
-
-                  <p className="font-bold text-lg">
-
-                    ₹ {fee.amount}
-
-                  </p>
-
-                  <p className="text-sm text-gray-500">
-
-                    {
-                      new Date(
-                        fee.paymentDate
-                      ).toLocaleDateString()
-                    }
-
-                  </p>
-
-                </div>
-
-                <p className="text-gray-600">
-
-                  {
-                    fee.paymentMethod
-                  }
-
-                </p>
-
-                <p className="text-sm text-gray-500 mt-2">
-
-                  {
-                    fee.receiptNumber
-                  }
-
-                </p>
+                )}
 
               </div>
 
-            ))}
+            </div>
+
+          </div>
+
+
+
+          {/* PAYMENT HISTORY */}
+
+          <div className="bg-white rounded-3xl shadow-sm p-8">
+
+            <h2 className="text-2xl font-bold mb-6">
+
+              Payment History
+
+            </h2>
+
+
+
+            <div className="overflow-x-auto">
+
+              <table className="w-full">
+
+                <thead className="bg-gray-100">
+
+                  <tr>
+
+                    <th className="p-4 text-left">
+
+                      Amount
+
+                    </th>
+
+
+
+                    <th className="p-4 text-left">
+
+                      Payment Method
+
+                    </th>
+
+
+
+                    <th className="p-4 text-left">
+
+                      Date
+
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+                  {fees.map((fee) => (
+
+                    <tr
+                      key={fee.id}
+
+                      className="border-b hover:bg-gray-50"
+                    >
+
+                      <td className="p-4 font-bold text-green-600">
+
+                        ₹ {fee.amount}
+
+                      </td>
+
+
+
+                      <td className="p-4">
+
+                        {fee.paymentMethod || "Cash"}
+
+                      </td>
+
+
+
+                      <td className="p-4">
+
+                        {new Date(
+                          fee.paymentDate
+                        ).toLocaleDateString()}
+
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
 
           </div>
 
         </div>
 
-      </div>
+      </main>
 
-    </main>
+    </div>
 
   );
 
