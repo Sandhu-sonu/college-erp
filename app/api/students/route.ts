@@ -11,28 +11,29 @@ export async function GET() {
   try {
 
     const students =
-      await prisma.student.findMany({
+  await prisma.student.findMany({
 
-        include: {
+    include: {
 
-          semesterRecords: {
-
-            orderBy: {
-              semester: "desc",
-            },
-
-            take: 1,
-
-          },
-
-        },
+      semesterRecords: {
 
         orderBy: {
-          createdAt: "desc",
+          semester: "desc",
         },
 
-      });
+        take: 1,
 
+      },
+
+      course: true,
+
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+  });
     return NextResponse.json(
       students
     );
@@ -98,8 +99,8 @@ export async function POST(
           mobile:
             body.mobile,
 
-          course:
-            body.course,
+          courseId:
+  Number(body.courseId),
 
           feeStatus,
 

@@ -77,8 +77,8 @@ export default function StudentsListPage() {
 
         &&
 
-        student.course
-          ?.toLowerCase()
+        student.course?.courseName
+  ?.toLowerCase()
           .includes(
             searchCourse.toLowerCase()
           )
@@ -349,9 +349,7 @@ export default function StudentsListPage() {
 
                         <td className="p-5 font-semibold text-gray-700">
 
-                          {
-                            student.course
-                          }
+                         {student.course?.courseName}
 
                         </td>
 
