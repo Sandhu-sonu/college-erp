@@ -2,35 +2,9 @@ import Sidebar from "@/components/Sidebar";
 
 import Navbar from "@/components/Navbar";
 
-import prisma from "@/lib/prisma";
+import Link from "next/link";
 
-async function getFees() {
-
-  return await prisma.fee.findMany({
-
-    include: {
-
-      student: true,
-
-    },
-
-    orderBy: {
-
-      paymentDate: "desc",
-
-    },
-
-  });
-
-}
-
-
-
-export default async function FeeHistoryPage() {
-
-  const fees = await getFees();
-
-
+export default function FeesDashboardPage() {
 
   return (
 
@@ -46,27 +20,89 @@ export default async function FeeHistoryPage() {
 
 
 
-        <div className="bg-white rounded-3xl shadow-sm p-8">
+        <div className="space-y-8">
 
           {/* HEADER */}
 
-          <div className="flex justify-between items-center mb-8">
+          <div>
 
-            <div>
+            <h1 className="text-4xl font-bold text-gray-900">
 
-              <h1 className="text-4xl font-bold text-gray-900">
+              Fee Dashboard
 
-                Fee History
-
-              </h1>
+            </h1>
 
 
 
-              <p className="text-gray-500 mt-2">
+            <p className="text-gray-500 mt-2">
 
-                Complete fee payment records
+              Manage fee collection and reports
+
+            </p>
+
+          </div>
+
+
+
+          {/* CARDS */}
+
+          <div className="grid md:grid-cols-3 gap-6">
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
+
+                Total Collection
 
               </p>
+
+
+
+              <h2 className="text-4xl font-bold text-green-600">
+
+                ₹ 0
+
+              </h2>
+
+            </div>
+
+
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
+
+                Pending Fees
+
+              </p>
+
+
+
+              <h2 className="text-4xl font-bold text-red-600">
+
+                ₹ 0
+
+              </h2>
+
+            </div>
+
+
+
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+
+              <p className="text-gray-500 mb-2">
+
+                Today's Collection
+
+              </p>
+
+
+
+              <h2 className="text-4xl font-bold text-blue-600">
+
+                ₹ 0
+
+              </h2>
 
             </div>
 
@@ -74,163 +110,43 @@ export default async function FeeHistoryPage() {
 
 
 
-          {/* TABLE */}
+          {/* ACTIONS */}
 
-          <div className="overflow-x-auto rounded-3xl border border-gray-100">
+          <div className="bg-white rounded-3xl shadow-sm p-8">
 
-            <table className="w-full">
+            <h2 className="text-2xl font-bold mb-6">
 
-              <thead className="bg-blue-600 text-white">
+              Quick Actions
 
-                <tr>
+            </h2>
 
-                  <th className="p-5 text-left">
 
-                    Student
 
-                  </th>
+            <div className="flex gap-4">
 
+              <Link
+                href="/admin/students/list"
 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-2xl font-semibold"
+              >
 
-                  <th className="p-5 text-left">
+                Open Student Fees
 
-                    Course
+              </Link>
 
-                  </th>
 
 
+              <Link
+                href="/admin/fees/history"
 
-                  <th className="p-5 text-left">
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
+              >
 
-                    Amount
+                Fee History
 
-                  </th>
+              </Link>
 
-
-
-                  <th className="p-5 text-left">
-
-                    Receipt No.
-
-                  </th>
-
-
-
-                  <th className="p-5 text-left">
-
-                    Payment Method
-
-                  </th>
-
-
-
-                  <th className="p-5 text-left">
-
-                    Date
-
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-
-              <tbody>
-
-                {fees.map((fee) => (
-
-                  <tr
-                    key={fee.id}
-
-                    className="border-b hover:bg-gray-50 transition"
-                  >
-
-                    {/* STUDENT */}
-
-                    <td className="p-5">
-
-                      <div>
-
-                        <p className="font-bold text-gray-800">
-
-                          {fee.student.name}
-
-                        </p>
-
-
-
-                        <p className="text-gray-500 text-sm">
-
-                          {fee.student.mobile}
-
-                        </p>
-
-                      </div>
-
-                    </td>
-
-
-
-                    {/* COURSE */}
-
-                    <td className="p-5 font-medium text-gray-700">
-
-                      {fee.student.course}
-
-                    </td>
-
-
-
-                    {/* AMOUNT */}
-
-                    <td className="p-5 text-green-700 font-bold text-lg">
-
-                      ₹ {fee.amount}
-
-                    </td>
-
-
-
-                    {/* RECEIPT */}
-
-                    <td className="p-5">
-
-                      {fee.receiptNumber || "-"}
-
-                    </td>
-
-
-
-                    {/* METHOD */}
-
-                    <td className="p-5">
-
-                      {fee.paymentMethod || "Cash"}
-
-                    </td>
-
-
-
-                    {/* DATE */}
-
-                    <td className="p-5">
-
-                      {new Date(
-
-                        fee.paymentDate
-
-                      ).toLocaleDateString()}
-
-                    </td>
-
-                  </tr>
-
-                ))}
-
-              </tbody>
-
-            </table>
+            </div>
 
           </div>
 
