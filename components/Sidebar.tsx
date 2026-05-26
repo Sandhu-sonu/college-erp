@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 import {
 
@@ -31,6 +32,28 @@ export default function Sidebar() {
 
 
 
+  const [open, setOpen] =
+  useState(false);
+
+useEffect(() => {
+
+  if (open) {
+
+    document.body.classList.add(
+      "sidebar-open"
+    );
+
+  } else {
+
+    document.body.classList.remove(
+      "sidebar-open"
+    );
+
+  }
+
+}, [open]);
+
+
   const menuItems = [
 
     {
@@ -45,6 +68,8 @@ export default function Sidebar() {
 
     },
 
+
+
     {
 
       title: "Students",
@@ -56,6 +81,8 @@ export default function Sidebar() {
         Users,
 
     },
+
+
 
     {
 
@@ -69,6 +96,8 @@ export default function Sidebar() {
 
     },
 
+
+
     {
 
       title: "Courses",
@@ -80,6 +109,8 @@ export default function Sidebar() {
         BookOpen,
 
     },
+
+
 
     {
 
@@ -93,6 +124,8 @@ export default function Sidebar() {
 
     },
 
+
+
     {
 
       title: "Fees",
@@ -105,6 +138,8 @@ export default function Sidebar() {
 
     },
 
+
+
     {
 
       title: "Reports",
@@ -116,6 +151,8 @@ export default function Sidebar() {
         FileText,
 
     },
+
+
 
     {
 
@@ -135,116 +172,170 @@ export default function Sidebar() {
 
   return (
 
-    <aside className="w-72 bg-gradient-to-b from-blue-950 to-blue-900 text-white min-h-screen fixed left-0 top-0 shadow-2xl flex flex-col">
+    <>
 
-      {/* LOGO */}
+      {/* MENU BUTTON */}
 
-      <div className="p-8 border-b border-blue-800">
+     {!open && (
 
-        <h1 className="text-3xl font-bold tracking-wide">
+  <button
 
-          College ERP
+    onClick={() =>
+      setOpen(true)
+    }
 
-        </h1>
+    className="fixed top-4 left-4 z-50 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg"
+  >
 
-        <p className="text-blue-200 mt-2 text-sm">
+    Menu
 
-          Management System
+  </button>
 
-        </p>
-
-      </div>
-
-
-
-      {/* MENU */}
-
-      <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
-
-        {menuItems.map((item) => {
-
-          const Icon =
-            item.icon;
-
-          const active =
-            pathname ===
-            item.href;
+)}
 
 
 
-          return (
+      {/* SIDEBAR */}
 
-            <Link
-              key={item.title}
+      {open && (
 
-              href={item.href}
+        <aside className="w-72 bg-gradient-to-b from-blue-950 to-blue-900 text-white min-h-screen fixed left-0 top-0 shadow-2xl flex flex-col z-40">
 
-              className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 group ${
-                active
+          {/* LOGO */}
 
-                  ? "bg-blue-700 shadow-lg"
+          <div className="p-8 border-b border-blue-800">
 
-                  : "hover:bg-blue-800"
-              }`}
-            >
+            <h1 className="text-3xl font-bold tracking-wide">
 
-              <Icon
-                size={22}
+              College ERP
 
-                className="group-hover:scale-110 transition"
-              />
-
-              <span className="font-medium text-[15px]">
-
-                {item.title}
-
-              </span>
-
-            </Link>
-
-          );
-
-        })}
-
-      </nav>
+            </h1>
 
 
 
-      {/* FOOTER */}
+            <p className="text-blue-200 mt-2 text-sm">
 
-      <div className="p-6 border-t border-blue-800">
-
-        <div className="flex items-center gap-4">
-
-          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold shadow-lg">
-
-            A
-
-          </div>
-
-
-
-          <div>
-
-            <p className="font-semibold">
-
-              Admin
-
-            </p>
-
-            <p className="text-sm text-blue-200">
-
-              Administrator
+              Management System
 
             </p>
 
           </div>
 
-        </div>
 
-      </div>
 
-    </aside>
+          {/* MENU */}
+
+          <nav className="flex-1 p-5 space-y-2 overflow-y-auto">
+
+            {menuItems.map((item) => {
+
+              const Icon =
+                item.icon;
+
+
+
+              const active =
+                pathname ===
+                item.href;
+
+
+
+              return (
+
+                <div
+
+                  key={item.title}
+
+                  onClick={() => {
+
+                    setOpen(false);
+
+
+
+                    setTimeout(() => {
+
+                      window.location.href =
+                        item.href;
+
+                    }, 150);
+
+                  }}
+
+                  className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 group cursor-pointer ${
+                    active
+
+                      ? "bg-blue-700 shadow-lg"
+
+                      : "hover:bg-blue-800"
+                  }`}
+                >
+
+                  <Icon
+
+                    size={22}
+
+                    className="group-hover:scale-110 transition"
+                  />
+
+
+
+                  <span className="font-medium text-[15px]">
+
+                    {item.title}
+
+                  </span>
+
+                </div>
+
+              );
+
+            })}
+
+          </nav>
+
+
+
+          {/* FOOTER */}
+
+          <div className="p-6 border-t border-blue-800">
+
+            <div className="flex items-center gap-4">
+
+              <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold shadow-lg">
+
+                A
+
+              </div>
+
+
+
+              <div>
+
+                <p className="font-semibold">
+
+                  Admin
+
+                </p>
+
+
+
+                <p className="text-sm text-blue-200">
+
+                  Administrator
+
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </aside>
+
+      )}
+
+    </>
 
   );
 

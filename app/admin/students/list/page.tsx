@@ -97,7 +97,7 @@ export default function StudentsListPage() {
 
 
 
-      <main className="flex-1 ml-72 p-6">
+   <main className="flex-1 p-6 transition-all duration-300 body-sidebar">
 
         <Navbar />
 

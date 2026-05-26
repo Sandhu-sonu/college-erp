@@ -14,7 +14,27 @@ import Sidebar from "@/components/Sidebar";
 
 import Navbar from "@/components/Navbar";
 
+import {
 
+  BarChart,
+
+  Bar,
+
+  XAxis,
+
+  YAxis,
+
+  Tooltip,
+
+  ResponsiveContainer,
+
+  PieChart,
+
+  Pie,
+
+  Cell,
+
+} from "recharts";
 
 interface Student {
 
@@ -82,7 +102,91 @@ export default function DashboardPage() {
 
   }, []);
 
+const revenueData = [
 
+  {
+
+    month: "Jan",
+
+    revenue: 40000,
+
+  },
+
+
+
+  {
+
+    month: "Feb",
+
+    revenue: 55000,
+
+  },
+
+
+
+  {
+
+    month: "Mar",
+
+    revenue: 70000,
+
+  },
+
+
+
+  {
+
+    month: "Apr",
+
+    revenue: 65000,
+
+  },
+
+
+
+  {
+
+    month: "May",
+
+    revenue: 85000,
+
+  },
+
+];
+
+
+
+const feeData = [
+
+  {
+
+    name: "Paid",
+
+    value: 75,
+
+  },
+
+
+
+  {
+
+    name: "Pending",
+
+    value: 25,
+
+  },
+
+];
+
+
+
+const COLORS = [
+
+  "#2563eb",
+
+  "#dc2626",
+
+];
 
   if (!dashboard) {
 
@@ -108,7 +212,7 @@ export default function DashboardPage() {
 
 
 
-      <main className="flex-1 ml-72 p-6">
+     <main className="flex-1 p-6 transition-all duration-300 body-sidebar">
 
         <Navbar />
 
@@ -239,7 +343,138 @@ export default function DashboardPage() {
 
           </div>
 
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
 
+  {/* REVENUE CHART */}
+
+  <div className="bg-white rounded-3xl shadow-sm p-8">
+
+    <h2 className="text-2xl font-bold mb-6">
+
+      Monthly Revenue
+
+    </h2>
+
+
+
+    <div className="h-80">
+
+      <ResponsiveContainer
+
+        width="100%"
+
+        height="100%"
+      >
+
+        <BarChart
+          data={revenueData}
+        >
+
+          <XAxis dataKey="month" />
+
+          <YAxis />
+
+          <Tooltip />
+
+
+
+          <Bar
+
+            dataKey="revenue"
+
+            fill="#2563eb"
+
+            radius={[10, 10, 0, 0]}
+          />
+
+        </BarChart>
+
+      </ResponsiveContainer>
+
+    </div>
+
+  </div>
+
+
+
+  {/* FEE STATUS */}
+
+  <div className="bg-white rounded-3xl shadow-sm p-8">
+
+    <h2 className="text-2xl font-bold mb-6">
+
+      Fee Status
+
+    </h2>
+
+
+
+    <div className="h-80 flex items-center justify-center">
+
+      <ResponsiveContainer
+
+        width="100%"
+
+        height="100%"
+      >
+
+        <PieChart>
+
+          <Pie
+
+            data={feeData}
+
+            cx="50%"
+
+            cy="50%"
+
+            outerRadius={100}
+
+            dataKey="value"
+
+            label
+          >
+
+            {feeData.map(
+
+              (
+
+                entry,
+
+                index
+
+              ) => (
+
+                <Cell
+
+                  key={`cell-${index}`}
+
+                  fill={
+                    COLORS[
+                      index
+                    ]
+                  }
+                />
+
+              )
+
+            )}
+
+          </Pie>
+
+
+
+          <Tooltip />
+
+        </PieChart>
+
+      </ResponsiveContainer>
+
+    </div>
+
+  </div>
+
+</div>
 
           {/* RECENT SECTION */}
 
