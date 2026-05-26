@@ -16,97 +16,31 @@ import {
 
 
 
-interface Course {
+interface Subject {
 
   id: number;
 
-  name: string;
-
-  duration: string;
-
-  semesters: number;
-
-  subjects: string[];
+  subjectName: string;
 
 }
 
 
 
-const initialCourses: Course[] = [
+interface Course {
 
-  {
+  id: number;
 
-    id: 1,
+  courseName: string;
 
-    name: "BCA",
+  duration: string;
 
-    duration: "3 Years",
+  semesters: number;
 
-    semesters: 6,
+  totalFee: number;
 
-    subjects: [
+  subjects: Subject[];
 
-      "Programming",
-
-      "DBMS",
-
-      "Networking",
-
-      "Data Structures",
-
-    ],
-
-  },
-
-  {
-
-    id: 2,
-
-    name: "BCOM",
-
-    duration: "3 Years",
-
-    semesters: 6,
-
-    subjects: [
-
-      "Accounts",
-
-      "Economics",
-
-      "Taxation",
-
-      "Business Law",
-
-    ],
-
-  },
-
-  {
-
-    id: 3,
-
-    name: "BA",
-
-    duration: "3 Years",
-
-    semesters: 6,
-
-    subjects: [
-
-      "History",
-
-      "Political Science",
-
-      "Punjabi",
-
-      "English",
-
-    ],
-
-  },
-
-];
+}
 
 
 
@@ -137,160 +71,165 @@ export default function CoursesPage() {
 
 
 
-  /* LOAD COURSES */
-
-  useEffect(() => {
-
-    const savedCourses =
-      localStorage.getItem(
-        "courses"
-      );
+  const [totalFee, setTotalFee] =
+    useState("");
 
 
 
-    if (savedCourses) {
+  /* FETCH COURSES */
+
+  const fetchCourses =
+    async () => {
+
+      const response =
+        await fetch(
+          "/api/courses"
+        );
+
+
+
+      const data =
+        await response.json();
+
+
 
       setCourses(
-        JSON.parse(savedCourses)
-      );
 
-    } else {
+  Array.isArray(data)
 
-      setCourses(
-        initialCourses
-      );
+    ? data
 
+    : []
 
-
-      localStorage.setItem(
-
-        "courses",
-
-        JSON.stringify(
-          initialCourses
-        )
-
-      );
-
-    }
-
-  }, []);
-
-
-
-  /* SAVE COURSES */
-
-  useEffect(() => {
-
-    if (courses.length > 0) {
-
-      localStorage.setItem(
-
-        "courses",
-
-        JSON.stringify(courses)
-
-      );
-
-    }
-
-  }, [courses]);
-
-
-
-  /* ADD COURSE */
-
-  const addCourse = () => {
-
-    if (!courseName) {
-
-      alert("Enter course name");
-
-      return;
-
-    }
-
-
-
-    const newCourse: Course = {
-
-      id: Date.now(),
-
-      name: courseName,
-
-      duration,
-
-      semesters,
-
-      subjects: [],
+);
 
     };
 
 
 
-    setCourses([
+  useEffect(() => {
 
-      ...courses,
+    fetchCourses();
 
-      newCourse,
-
-    ]);
+  }, []);
 
 
 
-    setCourseName("");
+  /* ADD COURSE */
+
+  const addCourse =
+    async () => {
+
+      if (!courseName) {
+
+        alert(
+          "Enter course name"
+        );
+
+        return;
+
+      }
 
 
 
-    setDuration("3 Years");
+      const response =
+        await fetch(
+          "/api/courses",
+
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+            },
+
+            body: JSON.stringify({
+
+              courseName,
+
+              duration,
+
+              semesters,
+
+              totalFee:
+                Number(
+                  totalFee
+                ),
+
+            }),
+
+          }
+
+        );
 
 
 
-    setSemesters(6);
+      if (response.ok) {
+
+        fetchCourses();
 
 
 
-    setShowModal(false);
+        setCourseName("");
 
-  };
+        setDuration(
+          "3 Years"
+        );
+
+        setSemesters(6);
+
+        setTotalFee("");
 
 
 
-  /* DELETE COURSE */
+        setShowModal(false);
 
-  const deleteCourse = (
+      }
 
-    id: number
+    };
 
-  ) => {
 
-    const confirmDelete =
-      confirm(
 
-        "Delete this course?"
+  /* DELETE */
+
+  const deleteCourse =
+    async (id: number) => {
+
+      const confirmDelete =
+        confirm(
+
+          "Delete this course?"
+
+        );
+
+
+
+      if (!confirmDelete)
+        return;
+
+
+
+      await fetch(
+
+        `/api/courses/${id}`,
+
+        {
+
+          method: "DELETE",
+
+        }
 
       );
 
 
 
-    if (!confirmDelete)
-      return;
+      fetchCourses();
 
-
-
-    const updatedCourses =
-      courses.filter(
-
-        (course) =>
-          course.id !== id
-
-      );
-
-
-
-    setCourses(updatedCourses);
-
-  };
+    };
 
 
 
@@ -351,7 +290,7 @@ export default function CoursesPage() {
 
 
 
-          {/* COURSE CARDS */}
+          {/* COURSE GRID */}
 
           <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
 
@@ -360,7 +299,7 @@ export default function CoursesPage() {
               <div
                 key={course.id}
 
-                className="bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                className="bg-white rounded-3xl shadow-sm hover:shadow-2xl transition overflow-hidden border border-gray-100"
               >
 
                 {/* TOP */}
@@ -369,7 +308,9 @@ export default function CoursesPage() {
 
                   <h2 className="text-5xl font-bold">
 
-                    {course.name}
+                    {
+                      course.courseName
+                    }
 
                   </h2>
 
@@ -377,7 +318,9 @@ export default function CoursesPage() {
 
                   <p className="mt-3 text-blue-100 text-lg">
 
-                    {course.duration}
+                    {
+                      course.duration
+                    }
 
                   </p>
 
@@ -391,11 +334,11 @@ export default function CoursesPage() {
 
                   {/* STATS */}
 
-                  <div className="flex gap-4">
+                  <div className="grid grid-cols-3 gap-4">
 
-                    <div className="bg-blue-50 rounded-2xl flex-1 p-5 text-center">
+                    <div className="bg-blue-50 rounded-2xl p-4 text-center">
 
-                      <p className="text-gray-500">
+                      <p className="text-gray-500 text-sm">
 
                         Semesters
 
@@ -403,9 +346,11 @@ export default function CoursesPage() {
 
 
 
-                      <h3 className="text-3xl font-bold text-blue-700 mt-2">
+                      <h3 className="text-2xl font-bold text-blue-700">
 
-                        {course.semesters}
+                        {
+                          course.semesters
+                        }
 
                       </h3>
 
@@ -413,9 +358,9 @@ export default function CoursesPage() {
 
 
 
-                    <div className="bg-green-50 rounded-2xl flex-1 p-5 text-center">
+                    <div className="bg-green-50 rounded-2xl p-4 text-center">
 
-                      <p className="text-gray-500">
+                      <p className="text-gray-500 text-sm">
 
                         Subjects
 
@@ -423,7 +368,7 @@ export default function CoursesPage() {
 
 
 
-                      <h3 className="text-3xl font-bold text-green-700 mt-2">
+                      <h3 className="text-2xl font-bold text-green-700">
 
                         {
                           course.subjects
@@ -434,17 +379,39 @@ export default function CoursesPage() {
 
                     </div>
 
+
+
+                    <div className="bg-yellow-50 rounded-2xl p-4 text-center">
+
+                      <p className="text-gray-500 text-sm">
+
+                        Fee
+
+                      </p>
+
+
+
+                      <h3 className="text-lg font-bold text-yellow-700">
+
+                        ₹{
+                          course.totalFee
+                        }
+
+                      </h3>
+
+                    </div>
+
                   </div>
 
 
 
-                  {/* SUBJECT TAGS */}
+                  {/* SUBJECTS */}
 
                   <div>
 
-                    <h3 className="font-bold text-gray-800 mb-4 text-lg">
+                    <h3 className="font-bold text-gray-800 mb-4">
 
-                      Main Subjects
+                      Subjects
 
                     </h3>
 
@@ -458,18 +425,19 @@ export default function CoursesPage() {
                         course.subjects.map(
 
                           (
-                            subject,
-                            index
+                            subject
                           ) => (
 
                             <span
-                              key={index}
+                              key={
+                                subject.id
+                              }
 
-                              className="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium"
+                              className="bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-sm"
                             >
 
                               {
-                                subject
+                                subject.subjectName
                               }
 
                             </span>
@@ -499,7 +467,7 @@ export default function CoursesPage() {
                   <div className="flex gap-3 pt-4">
 
                     <Link
-                      href={`/admin/subjects?course=${course.name}`}
+                      href={`/admin/subjects?course=${course.id}`}
 
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-2xl font-semibold"
                     >
@@ -507,16 +475,6 @@ export default function CoursesPage() {
                       Manage Subjects
 
                     </Link>
-
-
-
-                    <button
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 rounded-2xl font-semibold"
-                    >
-
-                      Edit
-
-                    </button>
 
 
 
@@ -580,7 +538,25 @@ export default function CoursesPage() {
                     )
                   }
 
-                  className="w-full border border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+                  className="w-full border border-gray-200 p-4 rounded-2xl"
+                />
+
+
+
+                <input
+                  type="number"
+
+                  placeholder="Total Fee"
+
+                  value={totalFee}
+
+                  onChange={(e) =>
+                    setTotalFee(
+                      e.target.value
+                    )
+                  }
+
+                  className="w-full border border-gray-200 p-4 rounded-2xl"
                 />
 
 
@@ -682,8 +658,6 @@ export default function CoursesPage() {
               </div>
 
 
-
-              {/* BUTTONS */}
 
               <div className="flex gap-4 mt-8">
 

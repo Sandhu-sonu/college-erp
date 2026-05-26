@@ -321,13 +321,15 @@ export default function StudentsListPage() {
 
                             <div>
 
-                              <p className="font-bold text-lg text-gray-800">
+                              <Link
+  href={`/admin/students/${student.id}`}
 
-                                {
-                                  student.name
-                                }
+  className="font-bold text-lg text-blue-600 hover:text-blue-800"
+>
 
-                              </p>
+  {student.name}
+
+</Link>
 
                               <p className="text-gray-500">
 

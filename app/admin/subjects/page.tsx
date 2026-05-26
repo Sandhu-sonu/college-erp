@@ -1,10 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+
+  useEffect,
+
+  useState,
+
+} from "react";
+
+
 
 import Sidebar from "@/components/Sidebar";
 
 import Navbar from "@/components/Navbar";
+
+
+
+interface Course {
+
+  id: number;
+
+  courseName: string;
+
+}
 
 
 
@@ -14,21 +32,19 @@ interface Subject {
 
   subjectName: string;
 
-  courseName: string;
-
   semester: number;
 
   subjectType: string;
 
-}
 
 
+  course: {
 
-interface Course {
+    id: number;
 
-  id: number;
+    courseName: string;
 
-  name: string;
+  };
 
 }
 
@@ -56,7 +72,7 @@ export default function SubjectsPage() {
 
       subjectName: "",
 
-      courseName: "",
+      courseId: "",
 
       semester: "",
 
@@ -66,48 +82,79 @@ export default function SubjectsPage() {
 
 
 
+  /* FETCH SUBJECTS */
+
+  const fetchSubjects =
+    async () => {
+
+      const response =
+        await fetch(
+          "/api/subjects"
+        );
+
+
+
+      const data =
+        await response.json();
+
+
+
+      setSubjects(
+
+  Array.isArray(data)
+
+    ? data
+
+    : []
+
+);
+
+    };
+
+
+
+  /* FETCH COURSES */
+
+  const fetchCourses =
+    async () => {
+
+      const response =
+        await fetch(
+          "/api/courses"
+        );
+
+
+
+      const data =
+        await response.json();
+
+
+
+      setCourses(
+
+  Array.isArray(data)
+
+    ? data
+
+    : []
+
+);
+
+    };
+
+
+
   useEffect(() => {
 
     fetchSubjects();
 
-
-
-    const savedCourses =
-      localStorage.getItem(
-        "courses"
-      );
-
-
-
-    if (savedCourses) {
-
-      setCourses(
-        JSON.parse(savedCourses)
-      );
-
-    }
+    fetchCourses();
 
   }, []);
 
 
 
-  const fetchSubjects = async () => {
-
-    const response =
-      await fetch("/api/subjects");
-
-
-
-    const data =
-      await response.json();
-
-
-
-    setSubjects(data);
-
-  };
-
-
+  /* HANDLE INPUT */
 
   const handleChange = (
 
@@ -134,111 +181,131 @@ export default function SubjectsPage() {
 
 
 
-  const handleSubmit = async (
+  /* ADD SUBJECT */
 
-    e: React.FormEvent
+  const handleSubmit =
+    async (
 
-  ) => {
+      e: React.FormEvent
 
-    e.preventDefault();
+    ) => {
 
-
-
-    const response =
-      await fetch("/api/subjects", {
-
-        method: "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-        },
-
-        body: JSON.stringify({
-
-          ...formData,
-
-          semester: Number(
-            formData.semester
-          ),
-
-        }),
-
-      });
+      e.preventDefault();
 
 
 
-    if (response.ok) {
+      const response =
+        await fetch(
 
-      alert(
-        "Subject Added Successfully"
+          "/api/subjects",
+
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+            },
+
+            body: JSON.stringify({
+
+              subjectName:
+                formData.subjectName,
+
+              semester:
+                Number(
+                  formData.semester
+                ),
+
+              subjectType:
+                formData.subjectType,
+
+              courseId:
+                Number(
+                  formData.courseId
+                ),
+
+            }),
+
+          }
+
+        );
+
+
+
+      if (response.ok) {
+
+        alert(
+          "Subject Added Successfully"
+        );
+
+
+
+        setFormData({
+
+          subjectName: "",
+
+          courseId: "",
+
+          semester: "",
+
+          subjectType: "",
+
+        });
+
+
+
+        fetchSubjects();
+
+      }
+
+    };
+
+
+
+  /* DELETE SUBJECT */
+
+  const deleteSubject =
+    async (id: number) => {
+
+      const confirmDelete =
+        confirm(
+
+          "Delete this subject?"
+
+        );
+
+
+
+      if (!confirmDelete)
+        return;
+
+
+
+      await fetch(
+
+        `/api/subjects/${id}`,
+
+        {
+
+          method: "DELETE",
+
+        }
+
       );
-
-
-
-      setFormData({
-
-        subjectName: "",
-
-        courseName: "",
-
-        semester: "",
-
-        subjectType: "",
-
-      });
 
 
 
       fetchSubjects();
 
-    }
-
-  };
+    };
 
 
 
-  const deleteSubject = async (
-
-    id: number
-
-  ) => {
-
-    const confirmDelete =
-      confirm(
-
-        "Delete this subject?"
-
-      );
-
-
-
-    if (!confirmDelete)
-      return;
-
-
-
-    await fetch(
-
-      `/api/subjects/${id}`,
-
-      {
-
-        method: "DELETE",
-
-      }
-
-    );
-
-
-
-    fetchSubjects();
-
-  };
-
-
+  /* FILTER */
 
   const filteredSubjects =
 
@@ -250,12 +317,15 @@ export default function SubjectsPage() {
 
           (subject) =>
 
-            subject.courseName ===
+            subject.course
+              .courseName ===
             courseFilter
 
         );
 
 
+
+  /* GROUP BY SEMESTER */
 
   const groupedSubjects =
     filteredSubjects.reduce(
@@ -346,6 +416,8 @@ export default function SubjectsPage() {
               className="grid md:grid-cols-4 gap-6"
             >
 
+              {/* SUBJECT NAME */}
+
               <input
                 type="text"
 
@@ -362,12 +434,12 @@ export default function SubjectsPage() {
 
 
 
-              {/* DYNAMIC COURSES */}
+              {/* COURSE */}
 
               <select
-                name="courseName"
+                name="courseId"
 
-                value={formData.courseName}
+                value={formData.courseId}
 
                 onChange={handleChange}
 
@@ -390,11 +462,13 @@ export default function SubjectsPage() {
                       key={course.id}
 
                       value={
-                        course.name
+                        course.id
                       }
                     >
 
-                      {course.name}
+                      {
+                        course.courseName
+                      }
 
                     </option>
 
@@ -405,6 +479,8 @@ export default function SubjectsPage() {
               </select>
 
 
+
+              {/* SEMESTER */}
 
               <select
                 name="semester"
@@ -445,6 +521,8 @@ export default function SubjectsPage() {
               </select>
 
 
+
+              {/* TYPE */}
 
               <select
                 name="subjectType"
@@ -489,6 +567,8 @@ export default function SubjectsPage() {
               </select>
 
 
+
+              {/* BUTTON */}
 
               <button
                 type="submit"
@@ -548,11 +628,13 @@ export default function SubjectsPage() {
                     key={course.id}
 
                     value={
-                      course.name
+                      course.courseName
                     }
                   >
 
-                    {course.name}
+                    {
+                      course.courseName
+                    }
 
                   </option>
 
@@ -623,7 +705,9 @@ export default function SubjectsPage() {
                             <p className="text-gray-500 mt-3">
 
                               {
-                                subject.courseName
+                                subject
+                                  .course
+                                  .courseName
                               }
 
                             </p>
