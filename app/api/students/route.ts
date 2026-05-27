@@ -64,6 +64,34 @@ export async function POST(
 
     const body =
       await request.json();
+      /* MOBILE VALIDATION */
+
+if (
+
+  !/^[0-9]{10}$/.test(
+    body.mobile
+  )
+
+) {
+
+  return NextResponse.json(
+
+    {
+
+      error:
+        "Mobile number must contain exactly 10 digits",
+
+    },
+
+    {
+
+      status: 400,
+
+    }
+
+  );
+
+}
 
     // AUTO CALCULATE REMAINING FEE
 
@@ -103,6 +131,7 @@ export async function POST(
   Number(body.courseId),
 
           feeStatus,
+          status: "ACTIVE",
 
         },
 

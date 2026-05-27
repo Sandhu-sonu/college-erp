@@ -52,53 +52,188 @@ export default function StudentsPage() {
 
   };
 
-  const handleSubmit = async (
-    e: any
-  ) => {
+ const handleSubmit = async (
+  e: any
+) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    const response =
-      await fetch("/api/students", {
 
-        method: "POST",
 
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
+  /* NAME VALIDATION */
 
-        body: JSON.stringify({
+  /* STUDENT NAME VALIDATION */
 
-          ...formData,
+if (
 
-          subjects:
-            selectedSubjects.join(", "),
+  !/^[A-Za-z\s]+$/.test(
+    formData.studentName
+  )
 
-        }),
+) {
 
-      });
+  alert(
+    "Student name can contain only alphabets"
+  );
 
-    const data =
-      await response.json();
+  return;
 
-    if (data.success) {
+}
 
-      alert(
-        "Student Registered Successfully"
-      );
+  if (
 
-      window.location.reload();
+    !formData.studentName.trim()
 
-    } else {
+  ) {
 
-      alert("Error");
+    alert(
+      "Student name is required"
+    );
 
-      console.log(data);
+    return;
 
-    }
+  }
 
-  };
+
+
+  /* FATHER NAME VALIDATION */
+
+  /* FATHER NAME VALIDATION */
+
+if (
+
+  !/^[A-Za-z\s]+$/.test(
+    formData.fatherName
+  )
+
+) {
+
+  alert(
+    "Father name can contain only alphabets"
+  );
+
+  return;
+
+}
+
+  if (
+
+    !formData.fatherName.trim()
+
+  ) {
+
+    alert(
+      "Father name is required"
+    );
+
+    return;
+
+  }
+
+
+
+  /* MOBILE VALIDATION */
+
+  if (
+
+    !/^[0-9]{10}$/.test(
+      formData.mobile
+    )
+
+  ) {
+
+    alert(
+      "Invalid mobile number"
+    );
+
+    return;
+
+  }
+
+
+
+  /* COURSE VALIDATION */
+
+  if (
+
+    !formData.course
+
+  ) {
+
+    alert(
+      "Please select course"
+    );
+
+    return;
+
+  }
+
+
+
+  /* SUBJECT VALIDATION */
+
+  if (
+
+    selectedSubjects.length === 0
+
+  ) {
+
+    alert(
+      "Please select at least one subject"
+    );
+
+    return;
+
+  }
+
+
+
+  const response =
+    await fetch("/api/students", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify({
+
+        ...formData,
+
+        subjects:
+          selectedSubjects.join(", "),
+
+      }),
+
+    });
+
+
+
+  const data =
+    await response.json();
+
+
+
+  if (data.success) {
+
+    alert(
+      "Student Registered Successfully"
+    );
+
+    window.location.reload();
+
+  } else {
+
+    alert(
+      data.error
+    );
+
+  }
+
+}
+
 
   return (
 
@@ -146,15 +281,15 @@ export default function StudentsPage() {
                   className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
                   onChange={(e) =>
-                    setFormData({
+  setFormData({
 
-                      ...formData,
+    ...formData,
 
-                      studentName:
-                        e.target.value,
+    studentName:
+      e.target.value
 
-                    })
-                  }
+  })
+}
                 />
 
                 <input
@@ -169,30 +304,40 @@ export default function StudentsPage() {
                       ...formData,
 
                       fatherName:
-                        e.target.value,
+  e.target.value
 
                     })
                   }
                 />
 
                 <input
-                  type="text"
-                  placeholder="Mobile Number"
-                  required
-                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-                  onChange={(e) =>
-                    setFormData({
+  type="text"
 
-                      ...formData,
+  value={formData.mobile}
 
-                      mobile:
-                        e.target.value,
+  onChange={(e) =>
 
-                    })
-                  }
-                />
+    setFormData({
 
+      ...formData,
+
+      mobile:
+        e.target.value
+
+    })
+
+  }
+
+  maxLength={10}
+
+  inputMode="numeric"
+
+  placeholder="Enter Mobile Number"
+
+  className="w-full border rounded-xl p-4"
+
+/>
                 <select
                   required
 
