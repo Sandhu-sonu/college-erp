@@ -18,6 +18,7 @@ model Student {
   mobile String
 
   courseId Int?
+  status String @default("ACTIVE")
 
 course Course? @relation(fields: [courseId], references: [id])
 
@@ -66,6 +67,10 @@ model SemesterRecord {
   remainingFee Float?
 
   feeStatus String?
+
+  previousDue Float @default(0)
+
+currentSemesterFee Float @default(0)
 
   createdAt DateTime @default(now())
 

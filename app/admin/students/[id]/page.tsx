@@ -147,7 +147,9 @@ export default async function StudentProfilePage(
 
   }
 
+const latestSemester =
 
+  student.semesterRecords?.[0];
 
   /* TOTAL PAID */
 
@@ -162,301 +164,704 @@ export default async function StudentProfilePage(
 
     );
 
-
-
   return (
 
-    <div className="flex bg-gray-100 min-h-screen">
+  <div className="flex bg-gray-100 min-h-screen">
 
-      <Sidebar />
-
-
-
-     <main className="flex-1 p-6 transition-all duration-300 body-sidebar">
-
-        <Navbar />
+    <Sidebar />
 
 
 
-        <div className="space-y-8">
+    <main className="body-sidebar flex-1 p-6 transition-all duration-300">
 
-          {/* PROFILE HEADER */}
+      <Navbar />
 
-          <div className="bg-white rounded-3xl shadow-sm p-10">
 
-            <div className="flex items-center gap-8">
 
-              {/* PHOTO */}
+      {/* PAGE HEADER */}
 
-              <div className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-5xl font-bold text-blue-700">
+      <div className="bg-white rounded-3xl shadow-sm p-8 mb-8">
 
-                {
-                  student.name[0]
-                }
+        <div className="flex flex-col lg:flex-row justify-between gap-8">
+
+          {/* LEFT */}
+
+          <div className="flex items-center gap-6">
+
+            {/* AVATAR */}
+
+            <div className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-6xl font-bold text-blue-700">
+
+              {student.name.charAt(0)}
+
+            </div>
+
+
+
+            {/* INFO */}
+
+            <div>
+
+              <h1 className="text-5xl font-black text-gray-900">
+
+                {student.name}
+
+              </h1>
+
+
+
+              <p className="text-gray-500 mt-2 text-lg">
+
+                Student ID: {student.id}
+
+              </p>
+
+
+
+              <div className="flex flex-wrap gap-3 mt-5">
+
+                {/* STATUS */}
+
+                <span className={`px-5 py-2 rounded-full text-sm font-bold text-white ${
+                  student.status ===
+                  "COMPLETED"
+
+                    ? "bg-green-600"
+
+                    : "bg-blue-600"
+                }`}>
+
+                  {student.status}
+
+                </span>
+
+
+
+                {/* FEE STATUS */}
+
+                <span
+  className={`px-5 py-2 rounded-full text-sm font-bold ${
+    latestSemester?.feeStatus ===
+    "PAID"
+
+      ? "bg-green-100 text-green-700"
+
+      : "bg-red-100 text-red-700"
+  }`}
+>
+
+  {latestSemester?.feeStatus}
+
+</span>
+
+
+
+                {/* COURSE */}
+
+                <span className="px-5 py-2 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+
+                  {
+
+                    student.course
+
+                      ?.courseName
+
+                  }
+
+                </span>
 
               </div>
 
+            </div>
 
-
-              {/* INFO */}
-
-              <div>
-
-                <h1 className="text-5xl font-bold text-gray-900">
-
-                  {student.name}
-
-                </h1>
+          </div>
 
 
 
-                <p className="text-gray-500 mt-3 text-lg">
+          {/* ACTIONS */}
 
-                  Student ID:
-                  {" "}
-                  {student.id}
+          <div className="flex flex-wrap gap-4 items-start">
 
-                </p>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold">
 
+              Edit Student
 
-
-                <div className="flex gap-4 mt-5">
-
-                  <span className="bg-blue-100 text-blue-700 px-5 py-2 rounded-2xl font-semibold">
-
-                    {
-                      student.course
-                    }
-
-                  </span>
+            </button>
 
 
 
-                  <span className="bg-green-100 text-green-700 px-5 py-2 rounded-2xl font-semibold">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-semibold">
 
-                    {
-                      student.feeStatus
-                    }
+              Add Payment
 
-                  </span>
+            </button>
+
+
+
+            <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-2xl font-semibold">
+
+              Promote
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      {/* SUMMARY CARDS */}
+
+      <div className="grid lg:grid-cols-4 gap-6 mb-8">
+
+        {/* TOTAL FEE */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500 font-medium">
+
+            Total Fee
+
+          </p>
+
+
+
+          <h2 className="text-4xl font-black text-green-600 mt-3">
+
+            ₹
+
+            {
+
+              latestSemester?.totalFee ||
+
+              0
+
+            }
+
+          </h2>
+
+        </div>
+
+
+
+        {/* PAID */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500 font-medium">
+
+            Paid
+
+          </p>
+
+
+
+          <h2 className="text-4xl font-black text-blue-700 mt-3">
+
+            ₹
+
+            {
+
+              latestSemester?.paidAmount ||
+
+              0
+
+            }
+
+          </h2>
+
+        </div>
+
+
+
+        {/* REMAINING */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500 font-medium">
+
+            Remaining
+
+          </p>
+
+
+
+          <h2 className="text-4xl font-black text-red-600 mt-3">
+
+            ₹
+
+            {
+
+              latestSemester?.remainingFee ||
+
+              0
+
+            }
+
+          </h2>
+
+        </div>
+
+
+
+        {/* CURRENT SEM */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500 font-medium">
+
+            Current Semester
+
+          </p>
+
+
+
+          <h2 className="text-4xl font-black text-purple-700 mt-3">
+
+            {
+
+              latestSemester?.semester ||
+
+              1
+
+            }
+
+          </h2>
+
+        </div>
+
+      </div>
+
+
+
+      {/* STUDENT INFO */}
+
+      <div className="grid lg:grid-cols-3 gap-6 mb-8">
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500">
+
+            Father Name
+
+          </p>
+
+
+
+          <h3 className="text-2xl font-bold mt-4">
+
+            {
+
+              student.fatherName
+
+            }
+
+          </h3>
+
+        </div>
+
+
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500">
+
+            Mobile
+
+          </p>
+
+
+
+          <h3 className="text-2xl font-bold mt-4">
+
+            {
+
+              student.mobile
+
+            }
+
+          </h3>
+
+        </div>
+
+
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+          <p className="text-gray-500">
+
+            Joined
+
+          </p>
+
+
+
+          <h3 className="text-2xl font-bold mt-4">
+
+            {
+
+              new Date(
+
+                student.createdAt
+
+              ).toLocaleDateString()
+
+            }
+
+          </h3>
+
+        </div>
+
+      </div>
+
+
+
+      {/* SEMESTER HISTORY */}
+
+      <div className="bg-white rounded-3xl shadow-sm p-8 mb-8">
+
+        <div className="flex justify-between items-center mb-8">
+
+          <h2 className="text-4xl font-black">
+
+            Semester Records
+
+          </h2>
+
+
+
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold">
+
+            + Add Semester
+
+          </button>
+
+        </div>
+
+
+
+        <div className="space-y-6">
+
+          {student.semesterRecords.map(
+
+            (sem: any) => (
+
+              <div
+                key={sem.id}
+
+                className="border rounded-3xl p-8 hover:shadow-md transition"
+              >
+
+                <div className="flex flex-col lg:flex-row justify-between gap-8">
+
+                  {/* LEFT */}
+
+                  <div className="flex-1">
+
+                    <h3 className="text-3xl font-black text-blue-700">
+
+                      Semester {sem.semester}
+
+                    </h3>
+
+
+
+                    <div className="flex flex-wrap gap-3 mt-6">
+
+                      {sem.subjects
+                        ?.split(",")
+
+                        .map(
+
+                          (
+
+                            subject:
+                              string,
+
+                            index:
+                              number
+
+                          ) => (
+
+                            <span
+                              key={index}
+
+                              className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold"
+                            >
+
+                              {
+
+                                subject
+
+                              }
+
+                            </span>
+
+                          )
+
+                        )}
+
+                    </div>
+
+                  </div>
+
+
+
+                  {/* RIGHT */}
+
+                  <div className="grid grid-cols-2 gap-6 min-w-[320px]">
+
+                    <div>
+
+                      <p className="text-gray-500">
+
+                        Total Fee
+
+                      </p>
+
+
+
+                      <h4 className="text-2xl font-black text-green-600 mt-2">
+
+                        ₹{sem.totalFee}
+
+                      </h4>
+
+                    </div>
+
+
+
+                    <div>
+
+                      <p className="text-gray-500">
+
+                        Paid
+
+                      </p>
+
+
+
+                      <h4 className="text-2xl font-black text-blue-700 mt-2">
+
+                        ₹{sem.paidAmount}
+
+                      </h4>
+
+                    </div>
+
+
+
+                    <div>
+
+                      <p className="text-gray-500">
+
+                        Remaining
+
+                      </p>
+
+
+
+                      <h4 className="text-2xl font-black text-red-600 mt-2">
+
+                        ₹{sem.remainingFee}
+
+                      </h4>
+
+                    </div>
+
+
+
+                    <div>
+
+                      <p className="text-gray-500">
+
+                        Fee Status
+
+                      </p>
+
+
+
+                      <span className={`inline-block mt-2 px-4 py-2 rounded-xl text-sm font-bold ${
+                        sem.feeStatus ===
+                        "PAID"
+
+                          ? "bg-green-100 text-green-700"
+
+                          : "bg-red-100 text-red-700"
+                      }`}>
+
+                        {
+
+                          sem.feeStatus
+
+                        }
+
+                      </span>
+
+                    </div>
+
+                  </div>
 
                 </div>
 
               </div>
 
-            </div>
+            )
 
-          </div>
+          )}
 
+        </div>
 
+      </div>
 
-          {/* QUICK INFO */}
 
-          <div className="grid md:grid-cols-4 gap-6">
 
-            <div className="bg-white rounded-3xl p-8 shadow-sm">
+      {/* PAYMENT HISTORY */}
 
-              <p className="text-gray-500">
+      <div className="bg-white rounded-3xl shadow-sm p-8">
 
-                Father Name
+        <div className="flex justify-between items-center mb-8">
 
-              </p>
+          <h2 className="text-4xl font-black">
 
+            Payment History
 
+          </h2>
 
-              <h2 className="text-2xl font-bold mt-3">
 
-                {
-                  student.fatherName
-                }
 
-              </h2>
+          <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-semibold">
 
-            </div>
+            Add Payment
 
+          </button>
 
+        </div>
 
-            <div className="bg-white rounded-3xl p-8 shadow-sm">
 
-              <p className="text-gray-500">
 
-                Mobile
+        <div className="overflow-x-auto">
 
-              </p>
+          <table className="w-full">
 
+            <thead>
 
+              <tr className="bg-gray-100">
 
-              <h2 className="text-2xl font-bold mt-3">
+                <th className="p-5 text-left">
 
-                {
-                  student.mobile
-                }
+                  Amount
 
-              </h2>
+                </th>
 
-            </div>
 
 
+                <th className="p-5 text-left">
 
-            <div className="bg-white rounded-3xl p-8 shadow-sm">
+                  Date
 
-              <p className="text-gray-500">
+                </th>
 
-                Total Payments
 
-              </p>
 
+                <th className="p-5 text-left">
 
+                  Method
 
-              <h2 className="text-3xl font-bold mt-3 text-green-700">
+                </th>
 
-                ₹{totalPaid}
 
-              </h2>
 
-            </div>
+                <th className="p-5 text-left">
 
+                  Receipt
 
+                </th>
 
-            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              </tr>
 
-              <p className="text-gray-500">
+            </thead>
 
-                Joined
 
-              </p>
 
+            <tbody>
 
+              {student.fees.length >
 
-              <h2 className="text-2xl font-bold mt-3">
+              0 ? (
 
-                {new Date(
+                student.fees.map(
 
-                  student.createdAt
+                  (
 
-                ).toLocaleDateString()}
+                    fee: any
 
-              </h2>
+                  ) => (
 
-            </div>
+                    <tr
+                      key={fee.id}
 
-          </div>
-
-
-
-          {/* SEMESTERS */}
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-
-            <div className="flex justify-between items-center mb-8">
-
-              <h2 className="text-3xl font-bold">
-
-                Semester Records
-
-              </h2>
-
-
-
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold">
-
-                + Add Semester
-
-              </button>
-
-            </div>
-
-
-
-            <div className="space-y-6">
-
-              {student.semesterRecords
-                .length > 0 ? (
-
-                student.semesterRecords.map(
-
-                  (record) => (
-
-                    <div
-                      key={
-                        record.id
-                      }
-
-                      className="border border-gray-100 rounded-3xl p-6"
+                      className="border-b hover:bg-gray-50"
                     >
 
-                      <div className="flex justify-between items-center">
+                      <td className="p-5 font-bold text-green-600">
 
-                        <div>
+                        ₹
 
-                          <h3 className="text-2xl font-bold text-blue-700">
+                        {
 
-                            Semester
-                            {" "}
-                            {
-                              record.semester
-                            }
+                          fee.amount
 
-                          </h3>
+                        }
+
+                      </td>
 
 
 
-                          <div className="flex flex-wrap gap-2 mt-4">
+                      <td className="p-5">
 
-  {student.subjects
+                        {
 
-    .filter(
+                          new Date(
 
-      (subject) =>
+                            fee.paymentDate
 
-        subject.semester ===
-        record.semester
+                          ).toLocaleDateString()
 
-    )
+                        }
 
-    .map((subject) => (
-
-      <span
-        key={subject.id}
-
-        className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold"
-      >
-
-        {subject.subjectName}
-
-      </span>
-
-    ))}
-
-</div>
-
-                        </div>
+                      </td>
 
 
 
-                        <div className="text-right">
+                      <td className="p-5">
 
-                          <p className="text-gray-500">
+                        {
 
-                            Fee Status
+                          fee.paymentMethod ||
 
-                          </p>
+                          "Cash"
+
+                        }
+
+                      </td>
 
 
 
-                          <h3 className="text-xl font-bold mt-2">
+                      <td className="p-5">
 
-                            {
-                              record.feeStatus
-                            }
+                        {
 
-                          </h3>
+                          fee.receiptNumber ||
 
-                        </div>
+                          "-"
+                        }
 
-                      </div>
+                      </td>
 
-                    </div>
+                    </tr>
 
                   )
 
@@ -464,187 +869,34 @@ export default async function StudentProfilePage(
 
               ) : (
 
-                <p className="text-gray-400">
+                <tr>
 
-                  No semester records found
+                  <td
+                    colSpan={4}
 
-                </p>
+                    className="text-center p-10 text-gray-400"
+                  >
+
+                    No payments found
+
+                  </td>
+
+                </tr>
 
               )}
 
-            </div>
+            </tbody>
 
-          </div>
-
-
-
-          {/* PAYMENT HISTORY */}
-
-          <div className="bg-white rounded-3xl shadow-sm p-8">
-
-            <div className="flex justify-between items-center mb-8">
-
-              <h2 className="text-3xl font-bold">
-
-                Payment History
-
-              </h2>
-
-
-
-              <Link
-                href={`/admin/students/fees/${student.id}`}
-
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-semibold"
-              >
-
-                Add Payment
-
-              </Link>
-
-            </div>
-
-
-
-            <div className="overflow-x-auto">
-
-              <table className="w-full">
-
-                <thead>
-
-                  <tr className="bg-gray-100">
-
-                    <th className="p-4 text-left">
-
-                      Amount
-
-                    </th>
-
-
-
-                    <th className="p-4 text-left">
-
-                      Date
-
-                    </th>
-
-
-
-                    <th className="p-4 text-left">
-
-                      Method
-
-                    </th>
-
-
-
-                    <th className="p-4 text-left">
-
-                      Receipt
-
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-
-
-                <tbody>
-
-                  {student.fees
-                    .length > 0 ? (
-
-                    student.fees.map(
-
-                      (fee) => (
-
-                        <tr
-                          key={fee.id}
-
-                          className="border-b"
-                        >
-
-                          <td className="p-4 font-bold text-green-700">
-
-                            ₹{
-                              fee.amount
-                            }
-
-                          </td>
-
-
-
-                          <td className="p-4">
-
-                            {new Date(
-
-                              fee.paymentDate
-
-                            ).toLocaleDateString()}
-
-                          </td>
-
-
-
-                          <td className="p-4">
-
-                            {
-                              fee.paymentMethod ||
-                              "-"
-                            }
-
-                          </td>
-
-
-
-                          <td className="p-4">
-
-                            {
-                              fee.receiptNumber ||
-                              "-"
-                            }
-
-                          </td>
-
-                        </tr>
-
-                      )
-
-                    )
-
-                  ) : (
-
-                    <tr>
-
-                      <td
-                        colSpan={4}
-
-                        className="p-8 text-center text-gray-400"
-                      >
-
-                        No payments found
-
-                      </td>
-
-                    </tr>
-
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
+          </table>
 
         </div>
 
-      </main>
+      </div>
 
-    </div>
+    </main>
 
-  );
+  </div>
+
+);
 
 }

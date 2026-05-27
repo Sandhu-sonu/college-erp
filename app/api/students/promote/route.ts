@@ -2,8 +2,12 @@ import prisma from "@/lib/prisma";
 
 import { NextResponse } from "next/server";
 
+
+
 export async function POST(
+
   request: Request
+
 ) {
 
   try {
@@ -11,20 +15,22 @@ export async function POST(
     const body =
       await request.json();
 
+
+
     const studentId =
-      Number(
-        body.studentId
-      );
+      Number(body.studentId);
 
 
 
-    // GET STUDENT
+    /* FIND STUDENT */
 
     const student =
       await prisma.student.findUnique({
 
         where: {
+
           id: studentId,
+
         },
 
       });
@@ -34,95 +40,294 @@ export async function POST(
     if (!student) {
 
       return NextResponse.json(
+
         {
+
           error:
             "Student not found",
+
         },
-        { status: 404 }
+
+        {
+
+          status: 404,
+
+        }
+
       );
 
     }
 
 
 
-    // GET CURRENT SEMESTER
+    /* GET LAST SEMESTER */
 
-    const currentSemester =
+    const lastSemester =
       await prisma.semesterRecord.findFirst({
 
         where: {
+
           studentId,
+
         },
+
+
 
         orderBy: {
-          semester: "desc",
-        },
-
-      });
-
-
-
-    if (!currentSemester) {
-
-      return NextResponse.json(
-        {
-          error:
-            "Semester record not found",
-        },
-        { status: 404 }
-      );
-
-    }
-
-
-
-    const nextSemester =
-      currentSemester.semester + 1;
-
-
-
-    if (nextSemester > 6) {
-
-      return NextResponse.json(
-        {
-          error:
-            "Student already completed course",
-        },
-        { status: 400 }
-      );
-
-    }
-
-
-
-    // GET NEXT SEM SUBJECTS
-
-    const subjects =
-      await prisma.subject.findMany({
-
-        where: {
-
-          courseName:
-            student.course,
 
           semester:
-            nextSemester,
+            "desc",
 
         },
 
       });
+
+
+
+    /* NEXT SEM */
+
+    const nextSemester =
+
+      lastSemester
+
+        ? lastSemester.semester +
+          1
+
+        : 1;
+
+
+
+    /* PREVIOUS DUE */
+
+    const previousDue =
+
+      lastSemester?.remainingFee ||
+
+      0;
+
+
+
+    /* CURRENT SEM FEE */
+
+    const currentSemesterFee =
+
+      body.currentSemesterFee
+
+        ? Number(
+            body.currentSemesterFee
+          )
+
+        : 0;
+
+
+
+    /* TOTAL */
+
+    const totalFee =
+
+      Number(previousDue) +
+
+      Number(currentSemesterFee);
+
+
+
+    /* SUBJECTS */
+
+    /* FIND COURSE */
+
+const course =
+  await prisma.course.findFirst({
+
+    where: {
+
+      courseName:
+        student.course,
+
+    },
+
+  });
+
+
+
+if (!course) {
+
+  return NextResponse.json(
+
+    {
+
+      error:
+        "Course not found",
+
+    },
+
+    {
+
+      status: 400,
+
+    }
+
+  );
+
+}
+
+
+
+/* SUBJECTS */
+
+const subjects =
+  await prisma.subject.findMany({
+
+    where: {
+
+      courseId:
+        course.id,
+
+
+
+      semester:
+        nextSemester,
+
+    },
+
+  });
 
 
 
     const subjectNames =
-      subjects.map(
-        (s) =>
-          s.subjectName
+  subjects.map(
+
+    (subject) =>
+
+      subject.subjectName
+
+  );
+
+
+
+    /* NO SUBJECTS */
+
+    if (subjectNames.length === 0) {
+
+      return NextResponse.json(
+
+        {
+
+          error:
+            `No subjects found for Semester ${nextSemester}`,
+
+        },
+
+        {
+
+          status: 400,
+
+        }
+
       );
 
+    }
 
 
-    // CREATE NEW SEMESTER RECORD
+
+    /* TOTAL SEMESTERS */
+
+    const totalSemesters =
+      student.course
+        ?.toLowerCase()
+        .includes("mca")
+
+        ? 4
+
+        : student.course
+            ?.toLowerCase()
+            .includes("bca")
+
+        ? 6
+
+        : 6;
+
+
+
+    /* LAST SEM CHECK */
+
+    if (
+
+      lastSemester &&
+
+      lastSemester.semester >=
+        totalSemesters
+
+    ) {
+
+      /* PENDING DUES */
+
+      if (
+
+        lastSemester.remainingFee >
+        0
+
+      ) {
+
+        return NextResponse.json(
+
+          {
+
+            error:
+              "Student has pending dues",
+
+          },
+
+          {
+
+            status: 400,
+
+          }
+
+        );
+
+      }
+
+
+
+      /* COMPLETE STUDENT */
+
+      await prisma.student.update({
+
+        where: {
+
+          id: studentId,
+
+        },
+
+
+
+        data: {
+
+          status:
+            "COMPLETED",
+
+        },
+
+      });
+
+
+
+      return NextResponse.json({
+
+        success: true,
+
+
+
+        message:
+          "Student completed course successfully",
+
+      });
+
+    }
+
+
+
+    /* CREATE NEW SEMESTER */
 
     const newSemester =
       await prisma.semesterRecord.create({
@@ -131,24 +336,38 @@ export async function POST(
 
           studentId,
 
+
+
           semester:
             nextSemester,
 
-          subjects:
-            subjectNames.join(
-              ", "
-            ),
 
-          totalFee:
-            currentSemester.totalFee,
+
+          subjects:
+  subjectNames.join(", "),
+
+
+
+          previousDue,
+
+
+
+          currentSemesterFee,
+
+
+
+          totalFee,
+
+
 
           paidAmount: 0,
 
+
+
           remainingFee:
+            totalFee,
 
-            currentSemester.remainingFee +
 
-            currentSemester.totalFee,
 
           feeStatus:
             "PENDING",
@@ -163,6 +382,13 @@ export async function POST(
 
       success: true,
 
+
+
+      message:
+        "Student promoted successfully",
+
+
+
       newSemester,
 
     });
@@ -171,11 +397,22 @@ export async function POST(
 
     console.log(error);
 
+
+
     return NextResponse.json(
+
       {
+
         error: error.message,
+
       },
-      { status: 500 }
+
+      {
+
+        status: 500,
+
+      }
+
     );
 
   }

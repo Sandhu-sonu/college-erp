@@ -9,7 +9,6 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 import {
-  Eye,
   Pencil,
   IndianRupee,
   Trash2,
@@ -58,34 +57,35 @@ export default function StudentsListPage() {
 
   const filteredStudents =
 
-    students.filter((student) => {
+  students.filter((student) => {
 
-      return (
+    return (
 
-        student.name
-          ?.toLowerCase()
-          .includes(
-            searchName.toLowerCase()
-          )
+      student.name
+        ?.toLowerCase()
+        .includes(
+          searchName.toLowerCase()
+        )
 
-        &&
+      &&
 
-        student.mobile
-          ?.includes(
-            searchMobile
-          )
+      student.mobile
+        ?.includes(
+          searchMobile
+        )
 
-        &&
+      &&
 
-        student.course?.courseName
-  ?.toLowerCase()
-          .includes(
-            searchCourse.toLowerCase()
-          )
+     (student.course?.courseName || "")
+  .toLowerCase()
 
-      );
+        .includes(
+          searchCourse.toLowerCase()
+        )
 
-    });
+    );
+
+  });
 
 
 
@@ -249,6 +249,11 @@ export default function StudentsListPage() {
                     Semester
 
                   </th>
+                  <th className="p-5 text-left">
+
+  Status
+
+</th>
 
                   <th className="p-5 text-left">
 
@@ -270,7 +275,7 @@ export default function StudentsListPage() {
 
                   <th className="p-5 text-left">
 
-                    Status
+                    Fee Status
 
                   </th>
 
@@ -345,9 +350,7 @@ export default function StudentsListPage() {
 
                         </td>
 
-
-
-                        <td className="p-5 font-semibold text-gray-700">
+              <td className="p-5 font-semibold text-gray-700">
 
                          {student.course?.courseName}
 
@@ -360,6 +363,26 @@ export default function StudentsListPage() {
                           Semester {
                             latest?.semester
                           }
+                          </td>
+                          <td className="p-4">
+
+  <span
+    className={`px-4 py-2 rounded-xl text-white text-sm font-semibold ${
+      student.status ===
+      "COMPLETED"
+
+        ? "bg-green-600"
+
+        : "bg-blue-600"
+    }`}
+  >
+
+    {student.status}
+
+  </span>
+
+
+          
 
                         </td>
 
@@ -423,17 +446,7 @@ export default function StudentsListPage() {
 
                           <div className="flex gap-3 justify-center">
 
-                            <Link
-                              href={`/admin/students/view/${student.id}`}
-
-                              className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center hover:scale-105 transition"
-                            >
-
-                              <Eye size={18} />
-
-                            </Link>
-
-
+                            
 
                             <Link
                               href={`/admin/students/edit/${student.id}`}

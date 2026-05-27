@@ -5,14 +5,63 @@ export async function GET() {
 
   try {
 
-    const students = await prisma.student.findMany({
+    const students =
+  await prisma.student.findMany({
 
-      orderBy: {
-        createdAt: "desc",
+    where: {
+
+      OR: [
+
+        {
+
+          status:
+            "ACTIVE",
+
+        },
+
+
+
+        {
+
+          status: null,
+
+        },
+
+      ],
+
+    },
+
+
+
+    include: {
+
+      semesterRecords: {
+
+        orderBy: {
+
+          semester:
+            "desc",
+
+        },
+
+
+
+        take: 1,
+
       },
 
-    });
+    },
 
+
+
+    orderBy: {
+
+      createdAt:
+        "desc",
+
+    },
+
+  });
     return NextResponse.json(students);
 
   } catch (error) {

@@ -133,29 +133,65 @@ export async function DELETE(
 
   try {
 
-    const resolvedParams = await params;
+    const resolvedParams =
+      await params;
 
-    await prisma.student.delete({
+    const studentId =
+      Number(
+        resolvedParams.id
+      );
+
+
+
+    await prisma.student.update({
 
       where: {
-        id: Number(resolvedParams.id),
+
+        id: studentId,
+
+      },
+
+
+
+      data: {
+
+        status: "DELETED",
+
       },
 
     });
 
+
+
     return NextResponse.json({
+
       success: true,
+
     });
 
   } catch (error: any) {
 
-    console.log("DELETE ERROR:", error);
+    console.log(
+      "DELETE ERROR:",
+      error
+    );
+
+
 
     return NextResponse.json(
+
       {
+
         error: error.message,
+
       },
-      { status: 500 }
+
+      {
+
+        status: 500,
+
+      }
+
     );
 
   }
