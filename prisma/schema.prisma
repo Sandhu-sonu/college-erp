@@ -139,3 +139,33 @@ students Student[]
   subjects Subject[]
 
 }
+
+model Expense {
+
+  id Int @id @default(autoincrement())
+
+
+
+  title String
+
+
+
+  category String
+
+
+
+  amount Float
+
+
+
+  description String?
+
+
+
+  expenseDate DateTime
+
+
+
+  createdAt DateTime @default(now())
+
+}

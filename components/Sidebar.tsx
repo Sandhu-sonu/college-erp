@@ -138,8 +138,25 @@ useEffect(() => {
 
     },
 
+{
 
+  title: "Expenses",
 
+  href: "/admin/expenses",
+
+  icon: IndianRupee,
+
+},
+
+{
+
+  title: "Ledger",
+
+  href: "/admin/ledger",
+
+  icon: FileText,
+
+},
     {
 
       title: "Reports",
