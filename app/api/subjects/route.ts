@@ -4,18 +4,67 @@ import prisma from "@/lib/prisma";
 
 
 
-export async function GET() {
+export async function GET(
+  request: Request
+) {
 
   try {
 
+    const { searchParams } =
+      new URL(request.url);
+
+
+
+    const courseId =
+      searchParams.get(
+        "courseId"
+      );
+
+
+
+    const semester =
+      searchParams.get(
+        "semester"
+      );
+
+
+
     const subjects =
       await prisma.subject.findMany({
+
+        where: {
+
+          ...(courseId
+            ? {
+
+                courseId:
+                  Number(courseId),
+
+              }
+            : {}),
+
+
+
+          ...(semester
+            ? {
+
+                semester:
+                  Number(semester),
+
+              }
+            : {}),
+
+        },
+
+
 
         include: {
 
           course: true,
 
         },
+
+
 
         orderBy: [
 
@@ -37,11 +86,16 @@ export async function GET() {
 
   } catch (error: any) {
 
+    console.log(error);
+
+
+
     return NextResponse.json(
 
       {
 
-        error: error.message,
+        error:
+          error.message,
 
       },
 
@@ -60,9 +114,7 @@ export async function GET() {
 
 
 export async function POST(
-
   request: Request
-
 ) {
 
   try {
@@ -81,13 +133,13 @@ export async function POST(
             body.subjectName,
 
           semester:
-            body.semester,
+            Number(body.semester),
 
           subjectType:
             body.subjectType,
 
           courseId:
-            body.courseId,
+            Number(body.courseId),
 
         },
 
@@ -105,7 +157,8 @@ export async function POST(
 
       {
 
-        error: error.message,
+        error:
+          error.message,
 
       },
 

@@ -31,6 +31,7 @@ export default function StudentsPage() {
       paidAmount: 0,
 
       remainingFee: 0,
+      courseId: "",
 
     });
 
@@ -337,151 +338,172 @@ if (
 
   className="w-full border rounded-xl p-4"
 
-/>
-                <select
-                  required
+/>           
+              <select
+  required
+  value={formData.courseId || ""}
 
-                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-                  onChange={async (e) => {
+  onChange={async (e) => {
 
-                    const selectedCourse =
-                      e.target.value;
+    const selectedCourseId =
+      e.target.value;
 
-                    const foundCourse =
-                      courses.find(
-                        (c) =>
-                          c.courseName ===
-                          selectedCourse
-                      );
+    const foundCourse =
+      courses.find(
+        (c: any) =>
+          c.id ===
+          Number(selectedCourseId)
+      );
 
-                    let fee = 0;
+    let fee = 0;
 
-                    if (foundCourse) {
+    if (foundCourse) {
 
-                      fee =
-                        foundCourse.totalFee;
+      fee =
+        foundCourse.totalFee;
 
-                    }
+    }
 
-                    setFormData((prev) => ({
+    setFormData((prev: any) => ({
 
-                      ...prev,
+      ...prev,
 
-                      course:
-                        selectedCourse,
+      courseId:
+        selectedCourseId,
 
-                      totalFee:
-                        fee,
+      course:
+        foundCourse?.courseName || "",
 
-                      remainingFee:
-                        fee -
-                        Number(
-                          prev.paidAmount
-                        ),
+      totalFee:
+        fee,
 
-                    }));
+      remainingFee:
+        fee -
+        Number(
+          prev.paidAmount
+        ),
 
-                    const subjectResponse =
-                      await fetch(
+    }));
 
-                        `/api/subjects?course=${selectedCourse}&semester=${formData.semester}`
 
-                      );
 
-                    const subjectData =
-                      await subjectResponse.json();
+    /* FETCH SUBJECTS */
 
-                    setSubjects(
-                      subjectData
-                    );
+    const response =
+      await fetch(
 
-                  }}
-                >
+        `/api/subjects?courseId=${selectedCourseId}&semester=${formData.semester}`
 
-                  <option value="">
-                    Select Course
-                  </option>
+      );
 
-                  {courses.map((course) => (
 
-                    <option
-                      key={course.id}
-                      value={
-                        course.courseName
-                      }
-                    >
 
-                      {course.courseName}
+    const data =
+      await response.json();
 
-                    </option>
 
-                  ))}
 
-                </select>
+    setSubjects(data);
 
-                <select
-                  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
+  }}
 
-                  onChange={async (e) => {
+>
 
-                    const semester =
-                      Number(
-                        e.target.value
-                      );
+  <option value="">
+    Select Course
+  </option>
 
-                    setFormData({
+  {courses.map((course: any) => (
 
-                      ...formData,
+    <option
+      key={course.id}
+      value={course.id}
+    >
 
-                      semester,
+      {course.courseName}
 
-                    });
+    </option>
 
-                    if (formData.course) {
+  ))}
 
-                      const response =
-                        await fetch(
+</select>
 
-                          `/api/subjects?course=${formData.course}&semester=${semester}`
 
-                        );
 
-                      const data =
-                        await response.json();
+<select
 
-                      setSubjects(data);
+  className="border-2 border-gray-200 p-4 rounded-2xl outline-none focus:border-blue-600"
 
-                    }
+  onChange={async (e) => {
 
-                  }}
-                >
+    const semester =
+      Number(
+        e.target.value
+      );
 
-                  <option value="1">
-                    Semester 1
-                  </option>
 
-                  <option value="2">
-                    Semester 2
-                  </option>
 
-                  <option value="3">
-                    Semester 3
-                  </option>
+    setFormData({
 
-                  <option value="4">
-                    Semester 4
-                  </option>
+      ...formData,
 
-                  <option value="5">
-                    Semester 5
-                  </option>
+      semester,
 
-                  <option value="6">
-                    Semester 6
-                  </option>
+    });
 
-                </select>
+
+
+    if (formData.courseId) {
+
+      const response =
+        await fetch(
+
+          `/api/subjects?courseId=${formData.courseId}&semester=${semester}`
+
+        );
+
+
+
+      const data =
+        await response.json();
+
+
+
+      setSubjects(data);
+
+    }
+
+  }}
+
+>
+
+  <option value="1">
+    Semester 1
+  </option>
+
+  <option value="2">
+    Semester 2
+  </option>
+
+  <option value="3">
+    Semester 3
+  </option>
+
+  <option value="4">
+    Semester 4
+  </option>
+
+  <option value="5">
+    Semester 5
+  </option>
+
+  <option value="6">
+    Semester 6
+  </option>
+
+</select>
 
                 <input
                   type="number"

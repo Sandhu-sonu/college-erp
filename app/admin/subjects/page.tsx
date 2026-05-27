@@ -649,112 +649,115 @@ export default function SubjectsPage() {
 
           {/* SEMESTERS */}
 
-          <div className="space-y-8">
+          {/* COURSES */}
 
-            {Object.keys(
+<div className="space-y-8">
 
-              groupedSubjects
+  {Object.keys(
+    groupedSubjects
+  ).map((courseName) => (
 
-            ).map((semester) => (
+    <div
 
-              <div
-                key={semester}
+      key={courseName}
 
-                className="bg-white rounded-3xl shadow-sm p-8"
-              >
+      className="bg-white rounded-3xl shadow-sm p-8"
 
-                <h2 className="text-3xl font-bold text-blue-700 mb-8">
+    >
 
-                  Semester {semester}
+      <h2 className="text-3xl font-bold text-blue-700 mb-8">
 
-                </h2>
+        {courseName}
 
-
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                  {groupedSubjects[
-                    semester
-                  ].map(
-
-                    (
-                      subject: Subject
-                    ) => (
-
-                      <div
-                        key={subject.id}
-
-                        className="border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition"
-                      >
-
-                        <div className="flex justify-between items-start">
-
-                          <div>
-
-                            <h3 className="text-2xl font-bold text-gray-800">
-
-                              {
-                                subject.subjectName
-                              }
-
-                            </h3>
+      </h2>
 
 
 
-                            <p className="text-gray-500 mt-3">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                              {
-                                subject
-                                  .course
-                                  .courseName
-                              }
+        {groupedSubjects[
+          courseName
+        ].map(
 
-                            </p>
+          (
+            subject: Subject
+          ) => (
 
-                          </div>
+            <div
+
+              key={subject.id}
+
+              className="border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition"
+
+            >
+
+              <div className="flex justify-between items-start">
+
+                <div>
+
+                  <h3 className="text-2xl font-bold text-gray-800">
+
+                    {
+                      subject.subjectName
+                    }
+
+                  </h3>
 
 
 
-                          <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold">
+                  <p className="text-gray-500 mt-3">
 
-                            {
-                              subject.subjectType
-                            }
+                    Semester {
+                      subject.semester
+                    }
 
-                          </span>
-
-                        </div>
-
-
-
-                        <button
-
-                          onClick={() =>
-                            deleteSubject(
-                              subject.id
-                            )
-                          }
-
-                          className="mt-6 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-2xl font-semibold"
-                        >
-
-                          Delete
-
-                        </button>
-
-                      </div>
-
-                    )
-
-                  )}
+                  </p>
 
                 </div>
 
+
+
+                <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold">
+
+                  {
+                    subject.subjectType
+                  }
+
+                </span>
+
               </div>
 
-            ))}
 
-          </div>
+
+              <button
+
+                onClick={() =>
+                  deleteSubject(
+                    subject.id
+                  )
+                }
+
+                className="mt-6 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-2xl font-semibold"
+
+              >
+
+                Delete
+
+              </button>
+
+            </div>
+
+          )
+
+        )}
+
+      </div>
+
+    </div>
+
+  ))}
+
+</div>
 
         </div>
 
