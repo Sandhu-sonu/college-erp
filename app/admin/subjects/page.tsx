@@ -1,86 +1,48 @@
 "use client";
 
 import {
-
   useEffect,
-
   useState,
-
 } from "react";
 
-
-
 import Sidebar from "@/components/Sidebar";
-
 import Navbar from "@/components/Navbar";
 
-
-
 interface Course {
-
   id: number;
-
   courseName: string;
-
 }
-
-
 
 interface Subject {
-
   id: number;
-
   subjectName: string;
-
   semester: number;
-
   subjectType: string;
 
-
-
   course: {
-
     id: number;
-
     courseName: string;
-
   };
-
 }
-
-
 
 export default function SubjectsPage() {
 
   const [subjects, setSubjects] =
     useState<Subject[]>([]);
 
-
-
   const [courses, setCourses] =
     useState<Course[]>([]);
-
-
 
   const [courseFilter, setCourseFilter] =
     useState("ALL");
 
-
-
   const [formData, setFormData] =
     useState({
-
       subjectName: "",
-
       courseId: "",
-
       semester: "",
-
       subjectType: "",
-
     });
-
-
 
   /* FETCH SUBJECTS */
 
@@ -92,26 +54,15 @@ export default function SubjectsPage() {
           "/api/subjects"
         );
 
-
-
       const data =
         await response.json();
 
-
-
       setSubjects(
-
-  Array.isArray(data)
-
-    ? data
-
-    : []
-
-);
-
+        Array.isArray(data)
+          ? data
+          : []
+      );
     };
-
-
 
   /* FETCH COURSES */
 
@@ -123,49 +74,30 @@ export default function SubjectsPage() {
           "/api/courses"
         );
 
-
-
       const data =
         await response.json();
 
-
-
       setCourses(
-
-  Array.isArray(data)
-
-    ? data
-
-    : []
-
-);
-
+        Array.isArray(data)
+          ? data
+          : []
+      );
     };
-
-
 
   useEffect(() => {
 
     fetchSubjects();
-
     fetchCourses();
 
   }, []);
 
-
-
   /* HANDLE INPUT */
 
   const handleChange = (
-
     e: React.ChangeEvent<
-
       HTMLInputElement |
-
       HTMLSelectElement
-
     >
-
   ) => {
 
     setFormData({
@@ -176,38 +108,26 @@ export default function SubjectsPage() {
         e.target.value,
 
     });
-
   };
-
-
 
   /* ADD SUBJECT */
 
   const handleSubmit =
     async (
-
       e: React.FormEvent
-
     ) => {
 
       e.preventDefault();
 
-
-
       const response =
         await fetch(
-
           "/api/subjects",
-
           {
-
             method: "POST",
 
             headers: {
-
               "Content-Type":
                 "application/json",
-
             },
 
             body: JSON.stringify({
@@ -229,12 +149,8 @@ export default function SubjectsPage() {
                 ),
 
             }),
-
           }
-
         );
-
-
 
       if (response.ok) {
 
@@ -242,29 +158,18 @@ export default function SubjectsPage() {
           "Subject Added Successfully"
         );
 
-
-
         setFormData({
 
           subjectName: "",
-
           courseId: "",
-
           semester: "",
-
           subjectType: "",
 
         });
 
-
-
         fetchSubjects();
-
       }
-
     };
-
-
 
   /* DELETE SUBJECT */
 
@@ -273,37 +178,21 @@ export default function SubjectsPage() {
 
       const confirmDelete =
         confirm(
-
           "Delete this subject?"
-
         );
-
-
 
       if (!confirmDelete)
         return;
 
-
-
       await fetch(
-
         `/api/subjects/${id}`,
-
         {
-
           method: "DELETE",
-
         }
-
       );
 
-
-
       fetchSubjects();
-
     };
-
-
 
   /* FILTER */
 
@@ -314,40 +203,46 @@ export default function SubjectsPage() {
       ? subjects
 
       : subjects.filter(
-
           (subject) =>
-
             subject.course
               .courseName ===
             courseFilter
-
         );
 
-
-
-  /* GROUP BY SEMESTER */
+  /* GROUP BY COURSE + SEMESTER */
 
   const groupedSubjects =
     filteredSubjects.reduce(
 
       (acc: any, subject) => {
 
-        const sem =
-          subject.semester;
+        const courseName =
+          subject.course.courseName;
 
+        const semester =
+          `Semester ${subject.semester}`;
 
+        /* CREATE COURSE */
 
-        if (!acc[sem]) {
+        if (!acc[courseName]) {
 
-          acc[sem] = [];
-
+          acc[courseName] = {};
         }
 
+        /* CREATE SEMESTER */
 
+        if (
+          !acc[courseName][semester]
+        ) {
 
-        acc[sem].push(subject);
+          acc[courseName][semester] =
+            [];
+        }
 
+        /* PUSH SUBJECT */
 
+        acc[courseName][semester]
+          .push(subject);
 
         return acc;
 
@@ -357,20 +252,15 @@ export default function SubjectsPage() {
 
     );
 
-
-
   return (
 
     <div className="flex bg-gray-100 min-h-screen">
 
       <Sidebar />
 
-
-<main className="flex-1 p-6 transition-all duration-300 body-sidebar">
+      <main className="flex-1 p-6 transition-all duration-300 body-sidebar">
 
         <Navbar />
-
-
 
         <div className="space-y-8">
 
@@ -384,21 +274,17 @@ export default function SubjectsPage() {
 
             </h1>
 
-
-
             <p className="text-gray-500 mt-3 text-lg">
 
-              Manage semester-wise subjects
+              Manage subjects course-wise and semester-wise
 
             </p>
 
           </div>
 
-
-
           {/* ADD SUBJECT */}
 
-          <div className="bg-white rounded-3xl shadow-sm p-8">
+          <div className="bg-white rounded-3xl shadow-sm p-6 h-fit">
 
             <h2 className="text-3xl font-bold mb-8">
 
@@ -406,12 +292,8 @@ export default function SubjectsPage() {
 
             </h2>
 
-
-
             <form
-
               onSubmit={handleSubmit}
-
               className="grid md:grid-cols-4 gap-6"
             >
 
@@ -419,29 +301,19 @@ export default function SubjectsPage() {
 
               <input
                 type="text"
-
                 name="subjectName"
-
                 placeholder="Subject Name"
-
                 value={formData.subjectName}
-
                 onChange={handleChange}
-
                 className="border border-gray-200 p-4 rounded-2xl"
               />
-
-
 
               {/* COURSE */}
 
               <select
                 name="courseId"
-
                 value={formData.courseId}
-
                 onChange={handleChange}
-
                 className="border border-gray-200 p-4 rounded-2xl"
               >
 
@@ -451,43 +323,28 @@ export default function SubjectsPage() {
 
                 </option>
 
-
-
                 {courses.map(
-
                   (course) => (
 
                     <option
                       key={course.id}
-
-                      value={
-                        course.id
-                      }
+                      value={course.id}
                     >
 
-                      {
-                        course.courseName
-                      }
+                      {course.courseName}
 
                     </option>
-
                   )
-
                 )}
 
               </select>
-
-
 
               {/* SEMESTER */}
 
               <select
                 name="semester"
-
                 value={formData.semester}
-
                 onChange={handleChange}
-
                 className="border border-gray-200 p-4 rounded-2xl"
               >
 
@@ -497,39 +354,28 @@ export default function SubjectsPage() {
 
                 </option>
 
-
-
                 {[1,2,3,4,5,6,7,8].map(
-
                   (sem) => (
 
                     <option
                       key={sem}
-
                       value={sem}
                     >
 
                       Semester {sem}
 
                     </option>
-
                   )
-
                 )}
 
               </select>
 
-
-
-              {/* TYPE */}
+              {/* SUBJECT TYPE */}
 
               <select
                 name="subjectType"
-
                 value={formData.subjectType}
-
                 onChange={handleChange}
-
                 className="border border-gray-200 p-4 rounded-2xl"
               >
 
@@ -539,39 +385,24 @@ export default function SubjectsPage() {
 
                 </option>
 
-
-
                 <option value="Core">
-
                   Core
-
                 </option>
-
-
 
                 <option value="Elective">
-
                   Elective
-
                 </option>
 
-
-
                 <option value="Practical">
-
                   Practical
-
                 </option>
 
               </select>
-
-
 
               {/* BUTTON */}
 
               <button
                 type="submit"
-
                 className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold md:col-span-4"
               >
 
@@ -583,8 +414,6 @@ export default function SubjectsPage() {
 
           </div>
 
-
-
           {/* FILTER */}
 
           <div className="bg-white rounded-3xl shadow-sm p-6 flex items-center gap-5">
@@ -595,19 +424,13 @@ export default function SubjectsPage() {
 
             </h3>
 
-
-
             <select
-
               value={courseFilter}
-
               onChange={(e) =>
-
                 setCourseFilter(
                   e.target.value
                 )
               }
-
               className="border border-gray-200 p-3 rounded-2xl"
             >
 
@@ -617,145 +440,175 @@ export default function SubjectsPage() {
 
               </option>
 
-
-
               {courses.map(
-
                 (course) => (
 
                   <option
                     key={course.id}
-
                     value={
                       course.courseName
                     }
                   >
 
-                    {
-                      course.courseName
-                    }
+                    {course.courseName}
 
                   </option>
-
                 )
-
               )}
 
             </select>
 
           </div>
 
+          {/* COURSE + SEMESTER VIEW */}
 
+          {/* COURSE + SEMESTER VIEW */}
 
-          {/* SEMESTERS */}
+<div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
 
-          {/* COURSES */}
-
-<div className="space-y-8">
-
-  {Object.keys(
+  {Object.entries(
     groupedSubjects
-  ).map((courseName) => (
+  ).map(
+    (
+      [courseName, semesters]: any
+    ) => (
 
-    <div
+      <div
+        key={courseName}
+        className="bg-white rounded-3xl shadow-sm p-6 h-fit"
+      >
 
-      key={courseName}
+        {/* COURSE TITLE */}
 
-      className="bg-white rounded-3xl shadow-sm p-8"
+        <h2 className="text-4xl font-bold text-blue-700 mb-10">
 
-    >
+          {courseName}
 
-      <h2 className="text-3xl font-bold text-blue-700 mb-8">
+        </h2>
 
-        {courseName}
+        {/* SEMESTERS */}
 
-      </h2>
-
-
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {groupedSubjects[
-          courseName
-        ].map(
-
+        {Object.entries(
+          semesters
+        ).map(
           (
-            subject: Subject
+            [semester, subjects]: any
           ) => (
 
             <div
-
-              key={subject.id}
-
-              className="border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition"
-
+              key={semester}
+              className="mb-10"
             >
 
-              <div className="flex justify-between items-start">
+              {/* SEMESTER TITLE */}
 
-                <div>
+              <h3 className="text-2xl font-bold text-gray-700 mb-5">
 
-                  <h3 className="text-2xl font-bold text-gray-800">
+                {semester}
 
-                    {
-                      subject.subjectName
-                    }
+              </h3>
 
-                  </h3>
+              {/* SUBJECT TABLE */}
 
+              <div className="overflow-hidden rounded-2xl border border-gray-200">
 
+                {/* TABLE HEADER */}
 
-                  <p className="text-gray-500 mt-3">
+                <div className="grid grid-cols-12 bg-gray-100 px-6 py-4 font-bold text-gray-700">
 
-                    Semester {
-                      subject.semester
-                    }
+                  <div className="col-span-5">
 
-                  </p>
+                    Subject Name
+
+                  </div>
+
+                  <div className="col-span-3">
+
+                    Type
+
+                  </div>
+
+                  <div className="col-span-4 text-right">
+
+                    Action
+
+                  </div>
 
                 </div>
 
+                {/* SUBJECT ROWS */}
 
+                {subjects.map(
+                  (
+                    subject: Subject,
+                    index: number
+                  ) => (
 
-                <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold">
+                    <div
+                      key={subject.id}
+                      className={`grid grid-cols-12 px-6 py-5 items-center border-t border-gray-100 hover:bg-gray-50 transition ${
+                        index % 2 === 0
+                          ? "bg-white"
+                          : "bg-gray-50/40"
+                      }`}
+                    >
 
-                  {
-                    subject.subjectType
-                  }
+                      {/* SUBJECT NAME */}
 
-                </span>
+                      <div className="col-span-5 text-lg font-semibold text-gray-800">
+
+                        {
+                          subject.subjectName
+                        }
+
+                      </div>
+
+                      {/* TYPE */}
+
+                      <div className="col-span-3">
+
+                        <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold">
+
+                          {
+                            subject.subjectType
+                          }
+
+                        </span>
+
+                      </div>
+
+                      {/* ACTION */}
+
+                      <div className="col-span-4 text-right">
+
+                        <button
+                          onClick={() =>
+                            deleteSubject(
+                              subject.id
+                            )
+                          }
+                          className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl font-semibold transition"
+                        >
+
+                          Delete
+
+                        </button>
+
+                      </div>
+
+                    </div>
+                  )
+                )}
 
               </div>
 
-
-
-              <button
-
-                onClick={() =>
-                  deleteSubject(
-                    subject.id
-                  )
-                }
-
-                className="mt-6 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-2xl font-semibold"
-
-              >
-
-                Delete
-
-              </button>
-
             </div>
-
           )
-
         )}
 
       </div>
-
-    </div>
-
-  ))}
+    )
+  )}
 
 </div>
 
@@ -764,7 +617,5 @@ export default function SubjectsPage() {
       </main>
 
     </div>
-
   );
-
 }

@@ -366,7 +366,7 @@ export default async function FeesDashboardPage() {
 
                           <td className="p-4">
 
-                            {student.course}
+                            {student.course?.courseName}
 
                           </td>
 

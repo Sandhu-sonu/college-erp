@@ -42,7 +42,9 @@ interface Student {
 
   name: string;
 
-  course: string;
+  course?: {
+  courseName: string
+}
 
 }
 
@@ -212,7 +214,7 @@ const COLORS = [
 
 
 
-     <main className="flex-1 p-6 transition-all duration-300 body-sidebar">
+     <main className="flex-1 min-w-0 p-6 transition-all duration-300 body-sidebar">
 
         <Navbar />
 
@@ -525,7 +527,7 @@ const COLORS = [
                         <p className="text-gray-500 mt-2">
 
                           {
-                            student.course
+                           student.course?.courseName
                           }
 
                         </p>

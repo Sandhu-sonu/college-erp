@@ -92,9 +92,6 @@ export async function PUT(
           mobile:
             body.mobile,
 
-          course:
-            body.course,
-
           feeStatus:
             body.feeStatus,
 

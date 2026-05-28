@@ -18,6 +18,7 @@ model Student {
   mobile String
 
   courseId Int?
+  
   status String @default("ACTIVE")
 
 course Course? @relation(fields: [courseId], references: [id])
@@ -97,16 +98,20 @@ model Subject {
 
 }
 
-model User {
-  id String @id @default(cuid())
+model Admin {
 
-  name String?
+  id        Int      @id @default(autoincrement())
 
-  email String @unique
+  name      String
 
-  password String
+  email     String   @unique
+
+  password  String
+
+  role      String   @default("CLERK")
 
   createdAt DateTime @default(now())
+
 }
 
 model Inquiry {

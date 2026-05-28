@@ -45,6 +45,7 @@ async function getStudent(
           },
 
         },
+        course: true,
 
       },
 
@@ -67,7 +68,7 @@ async function getStudent(
         course: {
 
           courseName:
-            student.course,
+            student.course?.courseName,
 
         },
 

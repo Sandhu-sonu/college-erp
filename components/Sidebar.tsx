@@ -216,7 +216,7 @@ useEffect(() => {
 
       {open && (
 
-        <aside className="w-72 bg-gradient-to-b from-blue-950 to-blue-900 text-white min-h-screen fixed left-0 top-0 shadow-2xl flex flex-col z-40">
+        <aside className="w-72 bg-gradient-to-b from-blue-950 to-blue-900 text-white h-screen fixed left-0 top-0 shadow-2xl flex flex-col z-40 overflow-y-auto">
 
           {/* LOGO */}
 

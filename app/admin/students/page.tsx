@@ -22,8 +22,6 @@ export default function StudentsPage() {
 
       mobile: "",
 
-      course: "",
-
       semester: 1,
 
       totalFee: 0,
@@ -157,7 +155,7 @@ if (
 
   if (
 
-    !formData.course
+    !formData.courseId
 
   ) {
 
@@ -372,9 +370,6 @@ if (
 
       courseId:
         selectedCourseId,
-
-      course:
-        foundCourse?.courseName || "",
 
       totalFee:
         fee,
@@ -715,7 +710,7 @@ if (
               </span>
 
               <span className="font-bold">
-                {formData.course || "-"}
+                {formData.courseId || "-"}
               </span>
 
             </div>

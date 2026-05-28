@@ -149,7 +149,7 @@ const exportToExcel = () => {
 
 
         Course:
-          record.student.course,
+          record.student.course?.courseName,
 
 
 

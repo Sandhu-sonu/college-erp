@@ -135,41 +135,6 @@ export async function POST(
 
     /* FIND COURSE */
 
-const course =
-  await prisma.course.findFirst({
-
-    where: {
-
-      courseName:
-        student.course,
-
-    },
-
-  });
-
-
-
-if (!course) {
-
-  return NextResponse.json(
-
-    {
-
-      error:
-        "Course not found",
-
-    },
-
-    {
-
-      status: 400,
-
-    }
-
-  );
-
-}
-
 
 
 /* SUBJECTS */
@@ -180,8 +145,9 @@ const subjects =
     where: {
 
       courseId:
-        course.id,
-
+  Number(
+    student.courseId
+  ),
 
 
       semester:
@@ -231,20 +197,27 @@ const subjects =
 
     /* TOTAL SEMESTERS */
 
-    const totalSemesters =
-      student.course
-        ?.toLowerCase()
-        .includes("mca")
+    /* TOTAL SEMESTERS */
 
-        ? 4
+const course =
+  await prisma.course.findUnique({
 
-        : student.course
-            ?.toLowerCase()
-            .includes("bca")
+    where: {
 
-        ? 6
+      id:
+        student.courseId ?? undefined,
 
-        : 6;
+    },
+
+  });
+
+
+
+const totalSemesters =
+
+  Number(
+    course?.semesters
+  ) || 6;
 
 
 
@@ -263,10 +236,11 @@ const subjects =
 
       if (
 
-        lastSemester.remainingFee >
-        0
+  Number(
+    lastSemester.remainingFee
+  ) > 0
 
-      ) {
+) {
 
         return NextResponse.json(
 

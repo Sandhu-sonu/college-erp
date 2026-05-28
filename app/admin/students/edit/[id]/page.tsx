@@ -223,10 +223,9 @@ export default function EditStudentPage() {
 
           <select
 
-            value={
-              student.course
-            }
-
+           value={
+  student.courseId
+}
             className="border-2 border-gray-200 p-4 rounded-2xl"
 
             onChange={(e) =>
@@ -234,8 +233,10 @@ export default function EditStudentPage() {
 
                 ...student,
 
-                course:
-                  e.target.value,
+                courseId:
+  Number(
+    e.target.value
+  ),
 
               })
             }
