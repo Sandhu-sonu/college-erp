@@ -1,5 +1,9 @@
-export default function Navbar() {
+"use client";
 
+import { useSession } from "next-auth/react";
+export default function Navbar() {
+const { data: session } =
+  useSession();
   return (
 
     <header className="bg-white rounded-3xl shadow-sm px-8 py-5 flex justify-between items-center mb-8">
@@ -27,16 +31,15 @@ export default function Navbar() {
         <div className="text-right">
 
           <p className="font-semibold">
-
-            Admin
-
-          </p>
+  {session?.user?.name || "Admin"}
+</p>
 
           <p className="text-sm text-gray-500">
 
-            Administrator
+  {(session?.user as any)
+    ?.role || "ADMIN"}
 
-          </p>
+</p>
 
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import Link from "next/link";
 
@@ -30,6 +31,10 @@ export default function StudentsListPage() {
 
   const [searchCourse, setSearchCourse] =
     useState("");
+    const { data: session } = useSession();
+
+const role =
+  (session?.user as any)?.role;
 
 
 
@@ -446,132 +451,90 @@ export default function StudentsListPage() {
 
                           <div className="flex gap-3 justify-center">
 
-                            
+  {role !== "CLERK" && (
+    <Link
+      href={`/admin/students/edit/${student.id}`}
+      className="w-11 h-11 rounded-xl bg-yellow-500 text-white flex items-center justify-center hover:scale-105 transition"
+    >
+      <Pencil size={18} />
+    </Link>
+  )}
 
-                            <Link
-                              href={`/admin/students/edit/${student.id}`}
+  <Link
+    href={`/admin/students/fees/${student.id}`}
+    className="w-11 h-11 rounded-xl bg-green-600 text-white flex items-center justify-center hover:scale-105 transition"
+  >
+    <IndianRupee size={18} />
+  </Link>
 
-                              className="w-11 h-11 rounded-xl bg-yellow-500 text-white flex items-center justify-center hover:scale-105 transition"
-                            >
+  {role !== "CLERK" && (
+    <button
+      className="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center hover:scale-105 transition"
+      onClick={async () => {
 
-                              <Pencil size={18} />
+        const response = await fetch(
+          "/api/students/promote",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              studentId: student.id,
+            }),
+          }
+        );
 
-                            </Link>
+        const data = await response.json();
 
+        if (data.success) {
 
+          alert(
+            "Student Promoted Successfully"
+          );
 
-                            <Link
-                              href={`/admin/students/fees/${student.id}`}
+          fetchStudents();
 
-                              className="w-11 h-11 rounded-xl bg-green-600 text-white flex items-center justify-center hover:scale-105 transition"
-                            >
+        } else {
 
-                              <IndianRupee size={18} />
+          alert(data.error);
 
-                            </Link>
+        }
 
+      }}
+    >
+      <ArrowUp size={18} />
+    </button>
+  )}
 
+  {role !== "CLERK" && (
+    <button
+      className="w-11 h-11 rounded-xl bg-red-600 text-white flex items-center justify-center hover:scale-105 transition"
+      onClick={async () => {
 
-                            <button
+        const confirmDelete =
+          confirm("Delete Student?");
 
-                              className="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center hover:scale-105 transition"
+        if (confirmDelete) {
 
-                              onClick={async () => {
+          await fetch(
+            `/api/students/${student.id}`,
+            {
+              method: "DELETE",
+            }
+          );
 
-                                const response =
-                                  await fetch(
+          fetchStudents();
 
-                                    "/api/students/promote",
+        }
 
-                                    {
+      }}
+    >
+      <Trash2 size={18} />
+    </button>
+  )}
 
-                                      method:
-                                        "POST",
-
-                                      headers: {
-                                        "Content-Type":
-                                          "application/json",
-                                      },
-
-                                      body: JSON.stringify({
-
-                                        studentId:
-                                          student.id,
-
-                                      }),
-
-                                    }
-
-                                  );
-
-                                const data =
-                                  await response.json();
-
-                                if (
-                                  data.success
-                                ) {
-
-                                  alert(
-                                    "Student Promoted Successfully"
-                                  );
-
-                                  fetchStudents();
-
-                                } else {
-
-                                  alert(
-                                    data.error
-                                  );
-
-                                }
-
-                              }}
-                            >
-
-                              <ArrowUp size={18} />
-
-                            </button>
-
-
-
-                            <button
-
-                              className="w-11 h-11 rounded-xl bg-red-600 text-white flex items-center justify-center hover:scale-105 transition"
-
-                              onClick={async () => {
-
-                                const confirmDelete =
-                                  confirm(
-                                    "Delete Student?"
-                                  );
-
-                                if (
-                                  confirmDelete
-                                ) {
-
-                                  await fetch(
-
-                                    `/api/students/${student.id}`,
-
-                                    {
-                                      method:
-                                        "DELETE",
-                                    }
-
-                                  );
-
-                                  fetchStudents();
-
-                                }
-
-                              }}
-                            >
-
-                              <Trash2 size={18} />
-
-                            </button>
-
-                          </div>
+</div>
 
                         </td>
 

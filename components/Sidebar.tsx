@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -30,14 +31,18 @@ export default function Sidebar() {
   const pathname =
     usePathname();
 
+  const { data: session } =
+  useSession();
+  const role =
+  (session?.user as any)
+    ?.role;
 
-
-  const [open, setOpen] =
+  const [open, setOpen] =                                             
   useState(false);
 
 useEffect(() => {
 
-  if (open) {
+  if (open) {                                             
 
     document.body.classList.add(
       "sidebar-open"
@@ -54,138 +59,98 @@ useEffect(() => {
 }, [open]);
 
 
-  const menuItems = [
 
-    {
-
-      title: "Dashboard",
-
-      href:
-        "/admin/dashboard",
-
-      icon:
-        LayoutDashboard,
-
-    },
-
-
-
-    {
-
-      title: "Students",
-
-      href:
-        "/admin/students/list",
-
-      icon:
-        Users,
-
-    },
-
-
-
-    {
-
-      title: "Admissions",
-
-      href:
-        "/admin/admissions",
-
-      icon:
-        GraduationCap,
-
-    },
-
-
-
-    {
-
-      title: "Courses",
-
-      href:
-        "/admin/courses",
-
-      icon:
-        BookOpen,
-
-    },
-
-
-
-    {
-
-      title: "Subjects",
-
-      href:
-        "/admin/subjects",
-
-      icon:
-        BookOpen,
-
-    },
-
-
-
-    {
-
-      title: "Fees",
-
-      href:
-        "/admin/fees",
-
-      icon:
-        IndianRupee,
-
-    },
-
-{
-
-  title: "Expenses",
-
-  href: "/admin/expenses",
-
-  icon: IndianRupee,
-
-},
-
-{
-
-  title: "Ledger",
-
-  href: "/admin/ledger",
-
-  icon: FileText,
-
-},
-    {
-
-      title: "Reports",
-
-      href:
-        "/admin/reports",
-
-      icon:
-        FileText,
-
-    },
-
-
-
-    {
-
-      title: "Settings",
-
-      href:
-        "/admin/settings",
-
-      icon:
-        Settings,
-
-    },
-
-  ];
-
-
+const menuItems = [
+
+  ...(role !== "CLERK"
+    ? [
+        {
+          title: "Dashboard",
+          href:
+            "/admin/dashboard",
+          icon:
+            LayoutDashboard,
+        },
+      ]
+    : []),
+
+  {
+    title: "Students",
+    href:
+      "/admin/students/list",
+    icon:
+      Users,
+  },
+
+  {
+    title: "Admissions",
+    href:
+      "/admin/admissions",
+    icon:
+      GraduationCap,
+  },
+
+  {
+    title: "Fees",
+    href:
+      "/admin/fees",
+    icon:
+      IndianRupee,
+  },
+
+  ...(role !== "CLERK"
+    ? [
+        {
+          title: "Courses",
+          href:
+            "/admin/courses",
+          icon:
+            BookOpen,
+        },
+
+        {
+          title: "Subjects",
+          href:
+            "/admin/subjects",
+          icon:
+            BookOpen,
+        },
+
+        {
+          title: "Expenses",
+          href:
+            "/admin/expenses",
+          icon:
+            IndianRupee,
+        },
+
+        {
+          title: "Ledger",
+          href:
+            "/admin/ledger",
+          icon:
+            FileText,
+        },
+
+        {
+          title: "Reports",
+          href:
+            "/admin/reports",
+          icon:
+            FileText,
+        },
+
+        {
+          title: "Settings",
+          href:
+            "/admin/settings",
+          icon:
+            Settings,
+        },
+      ]
+    : []),
+
+];
 
   return (
 
@@ -330,7 +295,8 @@ useEffect(() => {
 
                 <p className="font-semibold">
 
-                  Admin
+                  {session?.user?.name ||
+    "Admin"}
 
                 </p>
 
@@ -338,13 +304,24 @@ useEffect(() => {
 
                 <p className="text-sm text-blue-200">
 
-                  Administrator
+                   {session?.user?.role ||
+    "ADMIN"}
 
                 </p>
 
               </div>
 
             </div>
+            <button
+  onClick={() =>
+    signOut({
+      callbackUrl: "/login",
+    })
+  }
+  className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium"
+>
+  Logout
+</button>
 
           </div>
 
